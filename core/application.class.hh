@@ -1,6 +1,8 @@
 <?hh
 namespace ninjack\core;
 
+use ninjack\core\Response as Response;
+
 class Application{
   private Request $request;
   private Router $router;
@@ -20,7 +22,14 @@ class Application{
 
     $controller = $this->load_controller($split[0]);
 
-    var_dump($controller);
+    if($controller != null){
+      if(method_exists($controller, $split[1])){
+        $response = call_user_method($split[1], $controller);
+        if($response instanceof Response){
+          echo $response->get_render();
+        }
+      }
+    }
   }
 
   public static function get_instance() : Application{
