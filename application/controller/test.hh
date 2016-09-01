@@ -9,9 +9,11 @@ class Test extends Controller{
     return new Response("default");
   }
 
-  public function welcome(string $name) : Response{
+  public function welcome() : Response{
 
-    return new Response("default");
+    $this->add_to_view("name", "sulivan");
+
+    return new Response("");
   }
 
 }

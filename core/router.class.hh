@@ -5,9 +5,11 @@ use ninjack\core\Loader as Loader;
 class Router {
 
   private Configuration $configuration;
+  private Map<string,string> $action_components;
 
   public function __construct(){
     $this->configuration = Loader::load_configuration("route.hh");
+    $this->action_components = new Map(null);
   }
 
   public function route($uri) : ?string{
@@ -20,13 +22,9 @@ class Router {
           if(preg_match("/^".$escaped."$/", $uri)){
 
             $action = preg_replace("/^".$escaped."$/", $action, $uri);
-
-            $action_components =  $this->get_action_components($action);
-
-
-            $controller = Loader::load_controller((string) $action_components["controller"]);
-
-            call_user_method_array((string) $action_components["action"], $controller , (array) $action_components["parameters"]);
+            $this->action_components =  $this->get_action_components($action);
+            $controller = Loader::load_controller((string) $this->action_components["controller"]);
+            call_user_method_array((string) $this->action_components["action"], $controller , (array) $this->action_components["parameters"]);
 
             return $action;
           }
@@ -38,7 +36,7 @@ class Router {
     return null;
   }
 
-  private function get_action_components(string $action) : Map<string, mixed>{
+  private function get_action_components(string $action) : Map<string, string>{
     $components = new Map(null);
 
     $split = explode(":", $action);
@@ -49,11 +47,19 @@ class Router {
 
     $components["action"] = $args[0];
 
-    $components["parameters"] = array_slice($args, 1);
+    $components["parameters"] = implode("/",array_slice($args, 1));
 
 
     return $components;
   }
 
+
+  public function get_action() : string{
+    return $this->action_components["action"];
+  }
+
+  public function get_controller() : string{
+    return $this->action_components["controller"];
+  }
 
 }

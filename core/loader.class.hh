@@ -32,16 +32,17 @@ class Loader{
 
   }
 
-  public static function load_view(string $file) : string{
+  public static function load_view(string $file, Map $variables) : string{
     $path = VIEW_PATH.$file.".hh";
-
-
     ob_start();
+    $phpVariables = $variables->toArray();
+    include ROOT."variables_loader.php";
     include $path;
     $content = ob_get_contents();
     ob_end_clean();
 
     return $content;
   }
+
 
 }

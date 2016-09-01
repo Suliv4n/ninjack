@@ -18,16 +18,16 @@ class Application{
     $uri = $this->request->get_uri();
     $action = $this->router->route($uri);
 
-    $split = explode(":",$action);
+    $controller_name = $this->router->get_controller();
+    $action_name = $this->router->get_action();
 
-    $controller = $this->load_controller($split[0]);
+    $controller = $this->load_controller($controller_name);
 
     if($controller != null){
-      if(method_exists($controller, $split[1])){
-        $response = call_user_method($split[1], $controller);
-        if($response instanceof Response){
-          echo $response->get_render();
-        }
+      if(method_exists($controller, $action_name)){
+        call_user_method($action_name, $controller);
+        $response = $controller->get_response();
+        echo $response->get_render();
       }
     }
   }
@@ -46,6 +46,14 @@ class Application{
 
   public function load_controller(string $controller) : ?Controller{
     return Loader::load_controller($controller);
+  }
+
+  public function get_routed_controller() : string{
+    return $this->router->get_controller();
+  }
+
+  public function get_routed_action() : string{
+    return $this->router->get_action();
   }
 
 }

@@ -5,7 +5,7 @@
   </head>
   <body>
     <p>
-      Welcome <?hh echo {$name} ?>
+      Welcome <?php echo $name ?>
     </p>
   </body>
 </html>
