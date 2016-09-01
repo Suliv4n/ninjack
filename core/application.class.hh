@@ -20,12 +20,14 @@ class Application{
 
     $controller_name = $this->router->get_controller();
     $action_name = $this->router->get_action();
+    $parameters = $this->router->get_parameters();
 
     $controller = $this->load_controller($controller_name);
 
     if($controller != null){
       if(method_exists($controller, $action_name)){
-        call_user_method($action_name, $controller);
+        $action_parameters = $controller->cleaned_parameters($action_name, $parameters);
+        call_user_method_array($action_name, $controller, $action_parameters->toArray());
         $response = $controller->get_response();
         echo $response->get_render();
       }

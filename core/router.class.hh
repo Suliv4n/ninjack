@@ -24,7 +24,7 @@ class Router {
             $action = preg_replace("/^".$escaped."$/", $action, $uri);
             $this->action_components =  $this->get_action_components($action);
             $controller = Loader::load_controller((string) $this->action_components["controller"]);
-            call_user_method_array((string) $this->action_components["action"], $controller , (array) $this->action_components["parameters"]);
+            //call_user_method_array((string) $this->action_components["action"], $controller , (array) $this->action_components["parameters"]);
 
             return $action;
           }
@@ -60,6 +60,10 @@ class Router {
 
   public function get_controller() : string{
     return $this->action_components["controller"];
+  }
+
+  public function get_parameters() : Vector<string>{
+    return new Vector(explode("/", $this->action_components["parameters"]));
   }
 
 }

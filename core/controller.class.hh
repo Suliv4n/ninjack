@@ -36,4 +36,54 @@ class Controller{
     return new Response($this->get_view_name(), $this->variables);
   }
 
+  public function cleaned_parameters(string $action, Vector<string> $parameters) : Vector<mixed>{
+    $cleaned = new Vector(null);
+    if(method_exists($this, $action)){
+      $method = new \ReflectionMethod($this, $action);
+      $method_parameters = $method->getParameters();
+      foreach($method_parameters as $i => $parameter){
+        if(isset($parameters[$i])){
+          $parameter_type = $parameter->getType();
+          if($parameter_type != null){
+            //autre ou type string
+
+            $target_type = preg_replace("~^HH\\\\~", "", $parameter_type->__toString());
+
+            $target_parameter = $parameters->get($i);
+
+            switch ($target_type) {
+              case "boolean":
+              case "bool":
+                $target_parameter = boolval($target_parameter);
+                break;
+              case "int":
+              case "integer":
+                $target_parameter = intval($target_parameter);
+                break;
+              case "float":
+                $target_parameter = floatval($target_parameter);
+                break;
+              case "double":
+                $target_parameter = doubleval($target_parameter);
+                break;
+
+            }
+
+            $cleaned->add($target_parameter);
+
+          }
+          else{
+            $cleaned->add($parameters->get($i));
+          }
+        }
+        else{
+          //@todo error too few arguments
+          break;
+        }
+      }
+    }
+
+    return $cleaned;
+  }
+
 }
