@@ -45,7 +45,6 @@ class Controller{
         if(isset($parameters[$i])){
           $parameter_type = $parameter->getType();
           if($parameter_type != null){
-            //autre ou type string
 
             $target_type = preg_replace("~^HH\\\\~", "", $parameter_type->__toString());
 

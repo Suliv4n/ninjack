@@ -2,6 +2,7 @@
 namespace ninjack\core;
 
 use ninjack\core\Response as Response;
+use ninjack\core\exception\NoActionException as NoActionException;
 
 class Application{
   private Request $request;
@@ -31,6 +32,12 @@ class Application{
         $response = $controller->get_response();
         echo $response->get_render();
       }
+      else{
+        throw new NoActionException($controller_name, $action_name);
+      }
+    }
+    else{
+      throw new NoActionException($controller_name);
     }
   }
 
@@ -56,6 +63,10 @@ class Application{
 
   public function get_routed_action() : string{
     return $this->router->get_action();
+  }
+
+  public function get_route_rule() : (string, string){
+    return $this->router->get_rule();
   }
 
 }

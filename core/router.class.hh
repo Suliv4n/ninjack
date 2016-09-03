@@ -6,10 +6,14 @@ class Router {
 
   private Configuration $configuration;
   private Map<string,string> $action_components;
+  private string $route;
+  private string $target;
 
   public function __construct(){
     $this->configuration = Loader::load_configuration("route.hh");
     $this->action_components = new Map(null);
+    $this->route = "";
+    $this->target = "";
   }
 
   public function route($uri) : ?string{
@@ -20,7 +24,8 @@ class Router {
           $escaped = preg_replace("~/~", "\\/", $regex);
 
           if(preg_match("/^".$escaped."$/", $uri)){
-
+            $this->route = $regex;
+            $this->target = $action;
             $action = preg_replace("/^".$escaped."$/", $action, $uri);
             $this->action_components =  $this->get_action_components($action);
             $controller = Loader::load_controller((string) $this->action_components["controller"]);
@@ -64,6 +69,12 @@ class Router {
 
   public function get_parameters() : Vector<string>{
     return new Vector(explode("/", $this->action_components["parameters"]));
+  }
+
+
+
+  public function get_rule() : (string, string){
+    return tuple($this->route, $this->target);
   }
 
 }
