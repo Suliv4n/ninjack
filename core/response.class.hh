@@ -2,27 +2,20 @@
 namespace Ninjack\Core;
 
 use Ninjack\Core\Loader as Loader;
+use Ninjack\Core\View as View;
 
 class Response{
 
-  private string $view_name;
+  private View $view;
   private string $content_type;
-  private Map<string, mixed> $variables;
 
-  public function __construct(string $view_name, Map<string, mixed> $variables = Map{}, string $content_type = "text/html"){
-    $this->view_name = $view_name;
+  public function __construct(View $view, string $content_type = "text/html"){
+    $this->view = $view;
     $this->content_type = $content_type;
-    $this->variables = $variables;
   }
 
-  public function render(){
-
-  }
-
-  public function get_render() : string{
-    $render = Loader::load_view($this->view_name, $this->variables);
-
-    return $render;
+  public function render() : void{
+    $this->view->render();
   }
 
 }

@@ -26,20 +26,23 @@ class Application{
     $controller = $this->load_controller($controller_name);
 
     if($controller != null){
-      if(method_exists($controller, $action_name)){
-        $action_parameters = $controller->cleaned_parameters($action_name, $parameters);
-        call_user_method_array($action_name, $controller, $action_parameters->toArray());
+
+        $controller->run($action_name, $parameters);
+
         $response = $controller->get_response();
-        echo $response->get_render();
-      }
-      else{
-        throw new NoActionException($controller_name, $action_name);
-      }
+
+
+        if($response != null){
+          $response->render();
+        }
+
     }
     else{
       throw new NoActionException($controller_name);
     }
+
   }
+
 
   public static function get_instance() : Application{
     if(!isset(self::$instance)){

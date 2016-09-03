@@ -1,42 +1,47 @@
 <?hh
 namespace Ninjack\Core;
+use Ninjack\Core\View as View;
 use Ninjack\Core\Response as Response;
 use Ninjack\Core\Application as Application;
+use Ninjack\Core\NoActionException as NoActionException;
 
 class Controller{
 
-  private string $viewname;
-  private Map<string, mixed> $variables;
+  private View $view;
+  private bool $ran = false;
+  private ?Response $response;
 
   public function __construct(){
-    $this->variables = new Map(null);
-    $this->viewname = "";
+    $this->view = new View("");
   }
 
-  public function get_view_name() : string{
-    if(empty($this->viewname)){
+  public function run(string $action, Vector $parameters){
 
-      $controller = Application::get_instance()->get_routed_controller();
-      $action = Application::get_instance()->get_routed_action();
-
-      $this->set_view_name($controller."/".$action);
+    $controller = strtolower(get_class($this));
+    if(method_exists($this, $action)){
+      $this->view = new View($controller."/".$action);
+      $parameters = $this->cleaned_parameters($action, $parameters);
+      $this->response = new Response($this->view);
+      call_user_method_array($action, $this, $parameters->toArray());
+      $this->ran = true;
     }
-    return $this->viewname;
+    else{
+      throw NoActionException($controller, $action);
+    }
+
   }
 
-  protected function set_view_name(string $name) : void{
-    $this->viewname = trim(strtolower($name));
-  }
+
 
   protected function add_to_view(string $name, mixed $value) : void{
-    $this->variables[$name] = $value;
+    $this->view->set_variables($name, $value);
   }
 
-  public function get_response() : Response{
-    return new Response($this->get_view_name(), $this->variables);
+  public function get_response() : ?Response{
+    return $this->response;
   }
 
-  public function cleaned_parameters(string $action, Vector<string> $parameters) : Vector<mixed>{
+  private function cleaned_parameters(string $action, Vector<string> $parameters) : Vector<mixed>{
     $cleaned = new Vector(null);
     if(method_exists($this, $action)){
       $method = new \ReflectionMethod($this, $action);

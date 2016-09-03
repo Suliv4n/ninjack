@@ -8,8 +8,7 @@ define("VIEW_PATH", APPLICATION_PATH."view".DS);
 define("CORE_VIEW_PATH", ROOT."core".DS."view".DS);
 
 require_once ROOT."core/autoloader.class.hh";
-ninjack\core\Autoloader::register();
 
-ninjack\core\Error::get_instance()->set_error_handler(); 
-
-ninjack\core\Application::get_instance()->run();
+Ninjack\Core\Autoloader::register();
+Ninjack\Core\Error::get_instance()->set_error_handler();
+Ninjack\Core\Application::get_instance()->run();

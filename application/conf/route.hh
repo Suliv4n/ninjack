@@ -1,5 +1,5 @@
 <?hh
 $routes = Map{
   "/?" => "Test:home",
-  "/welcome/(.*)?" => "Tet:welcome/$1",
+  "/welcome/(.*)?" => "Test:welcome/$1",
 };
