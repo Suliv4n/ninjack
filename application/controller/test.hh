@@ -1,7 +1,7 @@
 <?hh
 
-use ninjack\core\Controller as Controller;
-use ninjack\core\Response as Response;
+use Ninjack\Core\Controller as Controller;
+use Ninjack\Core\Response as Response;
 
 class Test extends Controller{
 

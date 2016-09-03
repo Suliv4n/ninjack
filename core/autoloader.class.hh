@@ -1,5 +1,5 @@
 <?hh
-namespace ninjack\core;
+namespace Ninjack\Core;
 
 class Autoloader{
 
@@ -8,7 +8,7 @@ class Autoloader{
   }
 
   public static function autoload($class){
-    $parts = preg_split("#\\\#", $class);
+    $parts = preg_split("#\\\#", strtolower($class));
 
     //@todo constant ?
     if($parts[0] == "ninjack"){

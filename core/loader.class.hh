@@ -1,6 +1,6 @@
 <?hh
 
-namespace ninjack\core;
+namespace Ninjack\Core;
 
 class Loader{
 

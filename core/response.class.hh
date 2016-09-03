@@ -1,7 +1,7 @@
 <?hh
-namespace ninjack\core;
+namespace Ninjack\Core;
 
-use ninjack\core\Loader as Loader;
+use Ninjack\Core\Loader as Loader;
 
 class Response{
 

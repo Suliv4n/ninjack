@@ -1,7 +1,7 @@
 <?hh
-namespace ninjack\core;
-use ninjack\core\Response as Response;
-use ninjack\core\Application as Application;
+namespace Ninjack\Core;
+use Ninjack\Core\Response as Response;
+use Ninjack\Core\Application as Application;
 
 class Controller{
 

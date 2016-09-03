@@ -1,5 +1,5 @@
 <?hh
-namespace ninjack\core;
+namespace Ninjack\Core;
 
 class Configuration{
   private string $file;

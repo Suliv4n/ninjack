@@ -1,8 +1,8 @@
 <?hh
-namespace ninjack\core;
+namespace Ninjack\Core;
 
-use ninjack\core\Response as Response;
-use ninjack\core\exception\NoActionException as NoActionException;
+use Ninjack\Core\Response as Response;
+use Ninjack\Core\Exception\NoActionException as NoActionException;
 
 class Application{
   private Request $request;

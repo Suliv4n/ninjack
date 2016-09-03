@@ -1,6 +1,6 @@
 <?hh
-namespace ninjack\core;
-use ninjack\core\Loader as Loader;
+namespace Ninjack\Core;
+use Ninjack\Core\Loader as Loader;
 
 class Router {
 
