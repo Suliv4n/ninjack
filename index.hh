@@ -10,5 +10,5 @@ define("CORE_VIEW_PATH", ROOT."core".DS."view".DS);
 require_once ROOT."core/autoloader.class.hh";
 
 Ninjack\Core\Autoloader::register();
-Ninjack\Core\Error::get_instance()->set_error_handler();
+Ninjack\Core\Error::get_instance()->set_exception_handler();
 Ninjack\Core\Application::get_instance()->run();

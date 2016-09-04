@@ -1,13 +1,27 @@
 <?hh
 namespace Ninjack\Core;
 
+/**
+ * This class autoload is used to autoload other classes.
+ *
+ * @author Sulivan
+ */
 class Autoloader{
 
+  /*
+   * Registers the autoloader.
+   */
   public static function register(){
     spl_autoload_register(array(__CLASS__, 'autoload'));
   }
 
-  public static function autoload($class){
+  /**
+   * Autoload a class which name is passed in parameter.
+   *
+   * @param string $class the class name.
+   *
+   */
+  private static function autoload(string $class) : void{
     $parts = preg_split("#\\\#", strtolower($class));
 
     //@todo constant ?
