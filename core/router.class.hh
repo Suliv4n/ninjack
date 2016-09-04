@@ -4,19 +4,19 @@ use Ninjack\Core\Loader as Loader;
 
 class Router {
 
-  private Configuration $configuration;
+  private ?Configuration $configuration;
   private Map<string,string> $action_components;
   private string $route;
   private string $target;
 
   public function __construct(){
-    $this->configuration = Loader::load_configuration("route.hh");
     $this->action_components = new Map(null);
     $this->route = "";
     $this->target = "";
   }
 
   public function route($uri) : ?string{
+    $this->configuration = Application::get_instance()->loader()->load_configuration("route.hh");
     $routes = $this->configuration->get("routes");
 
     if($routes instanceof Map && $routes != null){
@@ -28,7 +28,7 @@ class Router {
             $this->target = $action;
             $action = preg_replace("/^".$escaped."$/", $action, $uri);
             $this->action_components =  $this->get_action_components($action);
-            $controller = Loader::load_controller((string) $this->action_components["controller"]);
+            $controller = Application::get_instance()->loader()->load_controller((string) $this->action_components["controller"]);
             //call_user_method_array((string) $this->action_components["action"], $controller , (array) $this->action_components["parameters"]);
 
             return $action;

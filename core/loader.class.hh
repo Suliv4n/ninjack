@@ -4,11 +4,17 @@ namespace Ninjack\Core;
 
 class Loader{
 
-  public static function load_configuration(string $file) : Configuration{
+  private static ?Loader $instance;
+
+  private function __construct(){
+
+  }
+
+  public function load_configuration(string $file) : Configuration{
     return Configuration::load($file);
   }
 
-  public static function load_controller(string $controller) : ?Controller{
+  public function load_controller(string $controller) : ?Controller{
     $path = CONTROLLER_PATH.strtolower($controller).".hh";
 
 
@@ -30,7 +36,7 @@ class Loader{
 
   }
 
-  public static function load_view(string $file, Map $variables) : string{
+  public function load_view(string $file, Map $variables) : string{
     $path = VIEW_PATH.$file.".hh";
 
     if(!file_exists($path)){
@@ -48,5 +54,11 @@ class Loader{
     return $content;
   }
 
+  public static function get_instance() : Loader{
+    if(self::$instance == null){
+      self::$instance = new Loader();
+    }
+    return self::$instance;
+  }
 
 }

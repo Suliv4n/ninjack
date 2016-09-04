@@ -2,17 +2,20 @@
 namespace Ninjack\Core;
 
 use Ninjack\Core\Response as Response;
+use Ninjack\Core\Loader as Loader;
 use Ninjack\Core\Exception\NoActionException as NoActionException;
 
 class Application{
   private Request $request;
   private Router $router;
+  private Loader $loader;
 
   private static ?Application $instance;
 
   private function __construct(){
     $this->router = new Router();
     $this->request = new Request();
+    $this->loader = Loader::get_instance();
   }
 
   public function run() : void{
@@ -57,7 +60,7 @@ class Application{
   }
 
   public function load_controller(string $controller) : ?Controller{
-    return Loader::load_controller($controller);
+    return $this->loader->load_controller($controller);
   }
 
   public function get_routed_controller() : string{
@@ -70,6 +73,10 @@ class Application{
 
   public function get_route_rule() : (string, string){
     return $this->router->get_rule();
+  }
+
+  public function loader() : Loader{
+    return $this->loader;
   }
 
 }
