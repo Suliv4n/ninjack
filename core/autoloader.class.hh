@@ -32,12 +32,18 @@ class Autoloader{
     $className = array_pop($parts);
 
     $path = implode(DIRECTORY_SEPARATOR, $parts);
-    $file = strtolower($className).".class.hh";
 
-    $filepath = ROOT.$path.DIRECTORY_SEPARATOR.$file;
+    foreach (Vector{'class', 'enum', 'interface'} as $type) {
 
-    if(file_exists($filepath))
-      require $filepath;
+      $file = strtolower($className).".".$type.".hh";
+      $filepath = ROOT.$path.DIRECTORY_SEPARATOR.$file;
+
+
+      if(file_exists($filepath)){
+        require $filepath;
+      }
+
+    }
 
   }
 }

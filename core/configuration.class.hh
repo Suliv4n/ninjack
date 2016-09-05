@@ -25,7 +25,7 @@ class Configuration{
    */
   private function __construct(string $file){
     $this->file = $file;
-    $this->variables = Map(null);
+    $this->variables = new Map(null);
   }
 
   /**

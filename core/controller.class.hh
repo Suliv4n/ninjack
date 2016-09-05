@@ -3,6 +3,7 @@ namespace Ninjack\Core;
 use Ninjack\Core\View as View;
 use Ninjack\Core\Response as Response;
 use Ninjack\Core\Application as Application;
+use Ninjack\Core\Database\DBConnector as DBConnector;
 use Ninjack\Core\NoActionException as NoActionException;
 
 /**
@@ -78,6 +79,15 @@ class Controller{
    */
   public final function get_response() : ?Response{
     return $this->response;
+  }
+
+  public function get_database(string $name) : ?DBConnector{
+    $connector = Application::get_instance()->load_database($name);
+    if($connector != null){
+      $connector->initialize();
+      return $connector;
+    }
+    return null;
   }
 
   /**

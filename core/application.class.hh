@@ -3,6 +3,7 @@ namespace Ninjack\Core;
 
 use Ninjack\Core\Response as Response;
 use Ninjack\Core\Loader as Loader;
+use Ninjack\Core\Database\DBConnector as DBConnector;
 use Ninjack\Core\Exception\NoActionException as NoActionException;
 
 /**
@@ -164,6 +165,38 @@ class Application{
    */
   public function loader() : Loader{
     return $this->loader;
+  }
+
+  /**
+   * Load a database connection given by name.
+   *
+   * @param string $name the name of the database to load.
+   *
+   * @return Ninjack\Core\Database\Connector;
+   *
+   */
+  public function load_database(string $name) : ?DBConnector{
+    $configuration = $this->loader->load_configuration("databases.hh");
+
+    $databases = $configuration->get("databases");
+
+    if($databases instanceof Map){
+      $configuration->get("databases");
+      if(!empty($databases[$name]) && $databases[$name] instanceof Map){
+        return new DBConnector(
+          $databases[$name]["dbdriver"],
+          $databases[$name]["hostname"],
+          $databases[$name]["port"],
+          $databases[$name]["username"],
+          $databases[$name]["password"],
+          $databases[$name]["database"],
+          $databases[$name]["charset"],
+        );
+      }
+    }
+
+    return null;
+
   }
 
 }

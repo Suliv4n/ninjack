@@ -10,7 +10,11 @@ class Test extends Controller{
   }
 
   public function welcome(string $name) : void{
-
+    $db = $this->get_database("main");
+    if($db != null){
+      $res = $db->query("select * from test")->fetchAll();
+      var_dump($res);
+    }
     $this->add_to_view("name", $name);
 
   }
