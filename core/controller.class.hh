@@ -4,7 +4,7 @@ use Ninjack\Core\View as View;
 use Ninjack\Core\Response as Response;
 use Ninjack\Core\Application as Application;
 use Ninjack\Core\Database\DBConnector as DBConnector;
-use Ninjack\Core\NoActionException as NoActionException;
+use Ninjack\Core\Exception\NoActionException as NoActionException;
 
 /**
  * The controller class.
@@ -48,15 +48,22 @@ class Controller{
   public final function run(string $action, Vector $parameters) : void{
 
     $controller = strtolower(get_class($this));
-    if(method_exists($this, $action)){
+
+    $is_action = false;
+    $exists = method_exists($this, $action);
+
+    if($exists){
+      $method = new \ReflectionMethod($this, $action);
+      $is_action = isset($method->getAttributes()["Action"]);
+
       $this->view = new View($controller."/".$action);
       $parameters = $this->cleaned_parameters($action, $parameters);
       $this->response = new Response($this->view);
       call_user_method_array($action, $this, $parameters->toArray());
       $this->ran = true;
     }
-    else{
-      throw NoActionException($controller, $action);
+    if(!$exists || !$is_action){
+      throw new NoActionException($controller, $action);
     }
 
   }
