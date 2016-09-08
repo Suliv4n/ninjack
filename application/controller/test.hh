@@ -20,7 +20,8 @@ class Test extends Controller{
       var_dump($res);
     }
     */
-    var_dump(Entity::get(Article::class));
+    $article = Entity::get(Article::class)[0];
+    $article->save();
     $this->add_to_view("name", $name);
 
   }

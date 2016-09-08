@@ -1,10 +1,13 @@
 <?hh
 namespace Ninjack\Core;
+use Ninjack\Core\TypeHelper as TypeHelper;
 use Ninjack\Core\View as View;
 use Ninjack\Core\Response as Response;
 use Ninjack\Core\Application as Application;
 use Ninjack\Core\Database\DBConnector as DBConnector;
 use Ninjack\Core\Exception\NoActionException as NoActionException;
+
+
 
 /**
  * The controller class.
@@ -115,37 +118,7 @@ class Controller{
       $method_parameters = $method->getParameters();
       foreach($method_parameters as $i => $parameter){
         if(isset($parameters[$i])){
-          $parameter_type = $parameter->getType();
-          if($parameter_type != null){
-
-            $target_type = preg_replace("~^HH\\\\~", "", $parameter_type->__toString());
-
-            $target_parameter = $parameters->get($i);
-
-            switch ($target_type) {
-              case "boolean":
-              case "bool":
-                $target_parameter = boolval($target_parameter);
-                break;
-              case "int":
-              case "integer":
-                $target_parameter = intval($target_parameter);
-                break;
-              case "float":
-                $target_parameter = floatval($target_parameter);
-                break;
-              case "double":
-                $target_parameter = doubleval($target_parameter);
-                break;
-
-            }
-
-            $cleaned->add($target_parameter);
-
-          }
-          else{
-            $cleaned->add($parameters->get($i));
-          }
+          $cleaned->add(TypeHelper::bind_parameter_value_type($parameter, $parameters->get($i)));
         }
         else{
           //@todo error too few arguments
