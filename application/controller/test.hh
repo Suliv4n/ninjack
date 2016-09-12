@@ -15,26 +15,21 @@ class Test extends Controller{
 
   <<Action>>
   public function welcome(string $name) : void{
+
     /*
-    $db = $this->get_database("main");
-    if($db != null){
-      $res = $db->query("select * from test")->fetchAll();
-      var_dump($res);
+    $articles = Entity::get(Article::class);
+
+
+    $article = $articles[0];
+    if($article instanceof Article){
+      $article->set_title("Entity saved !!");
+      $article->save();
     }
     */
 
 
-
-    $conn = $this->get_database("main");
-    if($conn != null){
-      echo "<pre>";
-      var_dump(
-        $conn->query_builder()->update("article", Map{
-            "title" => "Title modified B",
-        })->where("id", 2, DBOperator::NOT_EQUALS)->execute()
-      );
-      echo "</pre>";
-    }
+    $article = new Article(null, "Article added ! ");
+    $article->save();
 
     //$article = Entity::get(Article::class)[0];
     //$article->save();
