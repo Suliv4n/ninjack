@@ -1,6 +1,7 @@
 <?hh
 
 namespace Ninjack\Core;
+use Ninjack\Core\View;
 
 /**
  * A singleton class to load some component of the applciation (view, configuration, controller).
@@ -67,23 +68,19 @@ class Loader{
    *
    * @return the content generated.
    */
-  public function load_view(string $file, Map $variables) : string{
+  public function get_view_file(string $file) : string{
     $path = VIEW_PATH.$file.".hh";
 
     if(!file_exists($path)){
       $path = CORE_VIEW_PATH.$file.".hh";
     }
 
-
-    ob_start();
-    $phpVariables = $variables->toArray();
-    include ROOT."variables_loader.php";
-    include $path;
-    $content = ob_get_contents();
-    ob_end_clean();
-
-    return $content;
+    return $path;
   }
+
+    public function load_view(string $name) : View{
+      return new View($name);
+    }
 
   /**
    * Return the unique instance of Loader.
@@ -96,5 +93,7 @@ class Loader{
     }
     return self::$instance;
   }
+
+
 
 }

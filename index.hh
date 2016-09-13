@@ -9,6 +9,9 @@ define("CORE_VIEW_PATH", ROOT."core".DS."view".DS);
 
 require_once ROOT."core/autoloader.class.hh";
 
+//composer auto load
+require __DIR__ . '/vendor/autoload.php';
+
 Ninjack\Core\Autoloader::register();
 Ninjack\Core\Error::get_instance()->set_exception_handler();
 Ninjack\Core\Application::get_instance()->run();
