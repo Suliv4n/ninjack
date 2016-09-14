@@ -1,7 +1,8 @@
 <?hh
 
 namespace Ninjack\Core;
-use Ninjack\Core\View;
+use Ninjack\Core\View as View;
+use Ninjack\Core\Helper\File as File;
 
 /**
  * A singleton class to load some component of the applciation (view, configuration, controller).
@@ -9,6 +10,8 @@ use Ninjack\Core\View;
  * @author Sulivan
  */
 class Loader{
+
+  private bool $widgets_loaded = false;
 
   /*
    * The unique instance of Loader.
@@ -94,6 +97,30 @@ class Loader{
     return self::$instance;
   }
 
+  public function load_all_widgets() : void{
+    if(!$this->widgets_loaded){
+      $this->load_widgets_dir(WIDGET_PATH);
 
+
+    }
+  }
+
+  private function load_widgets_dir(string $path) : void{
+    $files = File::scandir($path);
+
+    if($files != null){
+      foreach ($files as $file) {
+        if(!is_dir($file)){
+          if(preg_match("-\.xhp\.hh$-", $file)){
+            include_once $file;
+          }
+        }
+        else{
+          $this->load_widgets_dir($file);
+        }
+      }
+      $this->widgets_loaded = true;
+    }
+  }
 
 }

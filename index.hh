@@ -2,6 +2,7 @@
 define("DS", DIRECTORY_SEPARATOR);
 define("ROOT", dirname(__FILE__).DS);
 define("APPLICATION_PATH", ROOT."application".DS);
+define("WIDGET_PATH", APPLICATION_PATH."widget".DS);
 define("CONF_PATH", APPLICATION_PATH."conf".DS);
 define("CONTROLLER_PATH", APPLICATION_PATH."controller".DS);
 define("VIEW_PATH", APPLICATION_PATH."view".DS);
