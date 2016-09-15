@@ -2,6 +2,7 @@
 
 namespace Ninjack\Core;
 use Ninjack\Core\View as View;
+use Ninjack\Core\Form\Form as Form;
 use Ninjack\Core\Helper\File as File;
 
 /**
@@ -121,6 +122,17 @@ class Loader{
       }
       $this->widgets_loaded = true;
     }
+  }
+
+  public function get_form_path(string $name) : string {
+    return FORM_PATH.$name.".form.hh";
+  }
+
+  public function load_form($name) : Form{
+    $form = new Form();
+    $form->load_form($name);
+
+    return $form;
   }
 
 }

@@ -2,6 +2,7 @@
 namespace Ninjack\Core;
 use Ninjack\Core\TypeHelper as TypeHelper;
 use Ninjack\Core\View as View;
+use Ninjack\Core\Form\Form as Form;
 use Ninjack\Core\Response as Response;
 use Ninjack\Core\Application as Application;
 use Ninjack\Core\Database\DBConnector as DBConnector;
@@ -128,6 +129,10 @@ class Controller{
     }
 
     return $cleaned;
+  }
+
+  public function load_form($name) : Form {
+    return Application::get_instance()->loader()->load_form($name);
   }
 
 }
