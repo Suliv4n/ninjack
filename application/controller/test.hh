@@ -18,6 +18,8 @@ class Test extends Controller{
 
     $form = $this->load_form("testform");
 
+    $form->run();
+
     $this->add_to_view("name", $name);
     $this->add_to_view("form", $form);
 

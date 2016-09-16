@@ -19,10 +19,14 @@ class Request{
   /**
    * Returns the requested uri.
    *
-   * @return string requested uri. 
+   * @return string requested uri.
    */
   public function get_uri() : string{
     return $_SERVER["REQUEST_URI"];
+  }
+
+  public function post(string $name, mixed $default = null) : mixed{
+    return isset($_POST[$name]) ? $_POST[$name] : $default;
   }
 
 }
