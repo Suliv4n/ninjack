@@ -131,6 +131,13 @@ class Controller{
     return $cleaned;
   }
 
+  /**
+   * Load a form given by name.
+   *
+   * @param string $name the name of the form to load.
+   *
+   * @return the generated Form.
+   */
   public function load_form($name) : Form {
     return Application::get_instance()->loader()->load_form($name);
   }

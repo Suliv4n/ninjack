@@ -65,12 +65,12 @@ class Loader{
   }
 
   /**
-   * Load the content of a view and inject variables.
+   * Returns the  view absolute file path.
    *
-   * @param string $file the file view file to load.
-   * @param Map<string, mixed> the variables to inject to the view.
+   * @param string $file the name of the view file
+   * (without extension)
    *
-   * @return the content generated.
+   * @return the  view absolute file path.
    */
   public function get_view_file(string $file) : string{
     $path = VIEW_PATH.$file.".hh";
@@ -82,30 +82,33 @@ class Loader{
     return $path;
   }
 
-    public function load_view(string $name) : View{
-      return new View($name);
-    }
-
   /**
-   * Return the unique instance of Loader.
+   * Returns the view given by name.
    *
-   * @return Ninjack\Core\Loader the unique instance of Loader.
+   * @param sting $name The name of the view to load.
+   *
+   * @return the loaded view.
    */
-  public static function get_instance() : Loader{
-    if(self::$instance == null){
-      self::$instance = new Loader();
-    }
-    return self::$instance;
+  public function load_view(string $name) : View{
+    return new View($name);
   }
 
+  /**
+   * Load all the widgets.
+   * Widgets are xhp elements so no namespace supported.
+   */
   public function load_all_widgets() : void{
     if(!$this->widgets_loaded){
       $this->load_widgets_dir(WIDGET_PATH);
-
-
     }
   }
 
+  /**
+   * Load widgets in a given directory recursively.
+   * Widgets are xhp elements so no namespace supported.
+   *
+   * @param string $path the directory to load.
+   */
   private function load_widgets_dir(string $path) : void{
     $files = File::scandir($path);
 
@@ -124,15 +127,41 @@ class Loader{
     }
   }
 
+  /**
+   * Returns a form configuration absolute path given by name.
+   *
+   * @param string $name the name of the form to load.
+   *
+   * @return the configuration absolute path of the form configuration.
+   */
   public function get_form_path(string $name) : string {
     return FORM_PATH.$name.".form.hh";
   }
 
+  /**
+   * Load a form and its configuration given by name.
+   *
+   * @param string $name the name of the form to load.
+   *
+   * @return the generated forms.
+   */
   public function load_form($name) : Form{
     $form = new Form();
     $form->load_form($name);
 
     return $form;
+  }
+
+  /**
+   * Return the unique instance of Loader.
+   *
+   * @return Ninjack\Core\Loader the unique instance of Loader.
+   */
+  public static function get_instance() : Loader{
+    if(self::$instance == null){
+      self::$instance = new Loader();
+    }
+    return self::$instance;
   }
 
 }
