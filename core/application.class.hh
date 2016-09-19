@@ -2,6 +2,7 @@
 namespace Ninjack\Core;
 
 use Ninjack\Core\Response as Response;
+use Ninjack\Core\Session as Session;
 use Ninjack\Core\Loader as Loader;
 use Ninjack\Core\Database\DBConnector as DBConnector;
 use Ninjack\Core\Exception\NoActionException as NoActionException;
@@ -36,12 +37,19 @@ class Application{
   private static ?Application $instance;
 
   /**
+   * The current session.
+   */
+   private Session $session;
+
+  /**
     * The application constructor.
     */
   private function __construct(){
     $this->router = new Router();
     $this->request = new Request();
     $this->loader = Loader::get_instance();
+
+    $this->session = Session::get_instance();
   }
 
   /**
@@ -198,5 +206,14 @@ class Application{
     return null;
 
   }
+
+  /**
+   * Returns the current session.
+   *
+   * @return the current session.
+   */
+   public function session() : Session{
+    return $this->session;
+   }
 
 }
