@@ -41,6 +41,8 @@ class Application{
    */
    private Session $session;
 
+   private Vector<string> $cli_arguments;
+
   /**
     * The application constructor.
     */
@@ -50,6 +52,8 @@ class Application{
     $this->loader = Loader::get_instance();
 
     $this->session = Session::get_instance();
+
+    $this->cli_arguments = Vector{};
   }
 
   /**
@@ -88,6 +92,24 @@ class Application{
       throw new NoActionException($controller_name);
     }
 
+  }
+
+  public function run_command() : void{
+    if(!$this->is_cli()){
+      throw new CLIException("Command can be run only on CLI");
+    }
+    $command_query = $this->get_cli_arguments()[1];
+    $command_name = explode(":", $command_query)[0];
+    $command_method = explode(":", $command_query)[1];
+
+    $command = $this->loader->load_command($command_name);
+    if($command != null){
+      //t@todo arguments
+      $command->go($command_method, Vector{});
+    }
+    else{
+      throw new CLIException("Command not found");
+    }
   }
 
   /**
@@ -214,6 +236,20 @@ class Application{
    */
    public function session() : Session{
     return $this->session;
+   }
+
+   public function is_cli() : bool{
+     return substr(PHP_SAPI, 0, 3) == "cli";
+   }
+
+   public function set_cli_arguments(Vector<string> $argv) : void{
+     if($this->is_cli()){
+       $this->cli_arguments = $argv;
+     }
+   }
+
+   public function get_cli_arguments() : Vector<string>{
+     return $this->cli_arguments;
    }
 
 }

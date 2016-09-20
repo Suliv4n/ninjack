@@ -2,6 +2,8 @@
 
 namespace Ninjack\Core;
 use Ninjack\Core\View as View;
+use Ninjack\Core\Controller as Controller;
+use Ninjack\Core\Cli\Command as Command;
 use Ninjack\Core\Form\Form as Form;
 use Ninjack\Core\Helper\File as File;
 
@@ -48,7 +50,7 @@ class Loader{
 
     include_once $path;
 
-
+    //@todo namespace
     if(class_exists($controller, false)){
 
       $reflector = new \ReflectionClass($controller);
@@ -61,6 +63,29 @@ class Loader{
     }
 
 
+
+    return null;
+
+  }
+
+  public function load_command(string $command) : ?Command{
+    $path = COMMAND_PATH.strtolower($command).".hh";
+
+
+    include_once $path;
+
+    //@todo namespace
+    if(class_exists($command, false)){
+
+      $reflector = new \ReflectionClass($command);
+
+      $obj = $reflector->newInstance();
+
+      if($obj instanceof Command){
+        return $obj;
+      }
+      die('here');
+    }
 
     return null;
 
