@@ -46,7 +46,9 @@ class Loader{
    */
   public function load_controller(string $controller) : ?Controller{
     $path = CONTROLLER_PATH.strtolower($controller).".hh";
+    $namespace = File::path_to_namespace(CONTROLLER_PATH);
 
+    $controller = $namespace.$controller;
 
     include_once $path;
 

@@ -40,4 +40,29 @@ class File{
 
     return null;
   }
+
+  public static function path_to_namespace(string $path) : string{
+
+    $path = self::remove_root_path($path);
+
+    $namespace_parts = Vector{};
+
+    $directories = explode(DS, $path);
+    foreach ($directories as $dir) {
+      $namespace_parts->add(ucfirst($dir));
+    }
+
+
+    return implode("\\", $namespace_parts);
+  }
+
+  public static function remove_root_path(string $path) : string{
+    $root_regex = "/^".preg_quote(ROOT, "/")."/";
+    return preg_replace($root_regex, "", $path);
+  }
+
+  public static function is_absolute_path(string $path) : bool{
+    return strlen($path) > 0 && $path[0] == "/";
+  }
+
 }

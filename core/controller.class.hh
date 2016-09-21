@@ -51,7 +51,10 @@ class Controller{
     */
   public final function run(string $action, Vector $parameters) : void{
 
-    $controller = strtolower(get_class($this));
+    $class = new \ReflectionClass($this);
+    $controller = strtolower(
+      $class->getShortName()
+    );
 
     $is_action = false;
     $exists = method_exists($this, $action);

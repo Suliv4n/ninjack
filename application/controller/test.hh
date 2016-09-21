@@ -1,5 +1,5 @@
 <?hh
-
+namespace Application\Controller;
 use Ninjack\Core\Controller as Controller;
 use Ninjack\Core\Response as Response;
 use Ninjack\Core\Database\Entity as Entity;
