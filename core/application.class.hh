@@ -6,6 +6,7 @@ use Ninjack\Core\Session as Session;
 use Ninjack\Core\Loader as Loader;
 use Ninjack\Core\Database\DBConnector as DBConnector;
 use Ninjack\Core\Exception\NoActionException as NoActionException;
+use Ninjack\Core\Exception\CLIException as CLIException;
 
 /**
  * The Ninjack Application singleton class. It handles the client request,

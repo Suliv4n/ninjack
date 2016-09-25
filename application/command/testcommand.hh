@@ -1,5 +1,4 @@
 <?hh
-
 use Ninjack\Core\Cli\Command as Command;
 use Ninjack\Core\Cli\CLIProgressBar as CLIProgressBar;
 use Ninjack\Core\Enum\CLIFGColor as CLIFGColor;
@@ -9,7 +8,7 @@ class TestCommand extends Command{
 
   <<Command>>
   public function test() : void{
-
+    /*
     $progress = new CLIProgressBar($this->console, 10., "Done");
     $progress->set_size(30);
 
@@ -18,6 +17,10 @@ class TestCommand extends Command{
       $progress->set_currint($i);
       $progress->print();
     }
+    */
+
+    
+
 
   }
 

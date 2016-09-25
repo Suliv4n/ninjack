@@ -43,7 +43,7 @@ class Console{
   }
 
 
-  public function println(mixed $value, ?CLIFGColor $color = null, ?CLIBGColor $bg_color = null) : void{
+  public function println(mixed $value="", ?CLIFGColor $color = null, ?CLIBGColor $bg_color = null) : void{
     $this->print($value, $color, $bg_color);
     $this->print("\n");
   }
