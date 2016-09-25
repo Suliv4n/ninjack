@@ -61,11 +61,14 @@ class DBConnector{
     return $dsn;
   }
 
-  public function query(string $query){/* @todo return type*/
-    if($this->pdo != null){
-      return $this->pdo->query($query);
+  public function query(string $query, Vector<mixed> $variables = Vector{}) : (bool,\PDOStatement){
+    if($this->pdo == null){
+      throw new Exception();
     }
-    return null;
+    $stmt = $this->pdo->prepare($query, $variables);
+    $result = $stmt->execute($variables);
+    return tuple($result, $stmt);
+
   }
 
   public function execute(string $query, ?Vector<mixed> $variables = null) : bool{
@@ -73,7 +76,7 @@ class DBConnector{
     if($this->pdo != null){
       $stmt = $this->pdo->prepare($query);
       $success =  $stmt->execute($variables);
-      
+
       $stmt->closeCursor();
       return $success;
     }

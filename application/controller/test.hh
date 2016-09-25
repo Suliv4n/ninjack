@@ -16,14 +16,8 @@ class Test extends Controller{
   <<Action>>
   public function welcome(string $name) : void{
 
-    $form = $this->load_form("testform");
-
-
-    $form->run();
-    $form->get_csrf_token_input();
-
-    $this->add_to_view("name", $name);
-    $this->add_to_view("form", $form);
+    $articles =  Entity::get(Article::class);
+    echo "<pre>"; var_dump($articles);die();
 
   }
 

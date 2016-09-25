@@ -2,6 +2,7 @@
 namespace Ninjack\Core\Database;
 use Ninjack\Core\Application as Application;
 use Ninjack\Core\TypeHelper as TypeHelper;
+use Ninjack\Core\Database\Orm\ClassMap as ClassMap;
 
 abstract class Entity{
 
@@ -10,55 +11,18 @@ abstract class Entity{
   const string PRIMARY_ATTRIBUTE = "PrimaryKey";
   const string GETTER_ATTRIBUTE = "Get";
 
+  private static Map<string, ClassMap> $class_maps = Map{};
+
   public static function get(string $class) : Vector<Entity>{
-
-    $entities = Vector{};
-
-    $class_reflection = new \ReflectionClass($class);
-
-    $database_name_attribute = $class_reflection->getAttribute(self::DATABASE_ATTRIBUTE);
-
-
-    $table_attribute = $class_reflection->getAttribute(self::TABLE_ATTRIBUTE);
-
-
-    if($table_attribute !== null && count($table_attribute) == 1){
-      $table = strval($table_attribute[0]);
+    if(!self::$class_maps->containsKey($class)){
+      $class_map = new ClassMap($class);
+      $class_map->map();
+      self::$class_maps[$class] = $class_map;
     }
     else{
-      $table = $class_reflection->getName();
+      $class_map = self::$class_maps[$class];
     }
-
-    if($database_name_attribute !== null && count($database_name_attribute) == 1){
-      $database_name = strval($database_name_attribute[0]);
-    }
-    else{
-      $database_name = "main";
-    }
-
-    $constructor = $class_reflection->getConstructor();
-    $attributes = $class_reflection->getProperties();
-
-    $database = Application::get_instance()->load_database($database_name);
-
-    if($database !== null){
-      $database->initialize();
-
-      $query = "select * from ".$table;
-      $result = $database->query($query);
-
-      if($constructor !== null){
-        while($row = $result->fetch()){
-          $constructor_args = new Map(null);
-          foreach($constructor->getParameters() as $parameter){
-            $constructor_args[$parameter->getName()] = TypeHelper::bind_parameter_value_type($parameter, $row[$parameter->getName()]);
-          }
-          $entities->add($class_reflection->newInstanceArgs($constructor_args));
-        }
-      }
-    }
-
-    return $entities;
+    return $class_map->get();
   }
 
 

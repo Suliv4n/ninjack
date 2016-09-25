@@ -1,7 +1,8 @@
 <?hh
 namespace Ninjack\Core\Database;
-use Ninjack\Core\Database\DBConnector as DBConnector;
 use Ninjack\Core\Enum\DBOperator as DBOperator;
+use Ninjack\Core\Database\DBConnector as DBConnector;
+
 
 type Where = shape(
   "column" => string,
@@ -177,5 +178,10 @@ class QueryBuilder{
   public function execute() : bool{
     return $this->connector->execute($this->get_query(), $this->variables);
   }
+
+  public function get() : \PDOStatement{
+    return $this->connector->query($this->get_query(), $this->variables)[1];
+  }
+
 
 }
