@@ -19,7 +19,7 @@ class TypeHelper{
    *
    * @param the Casted value type.
    */
-  public static function bind_parameter_value_type(\ReflectionParameter $parameter, ?string $value) : mixed{
+  public static function bind_parameter_value_type(\ReflectionParameter $parameter, mixed $value) : mixed{
 
     if($value == null){
       return null;
@@ -45,6 +45,9 @@ class TypeHelper{
             break;
           case "double":
             $value = doubleval($value);
+            break;
+          case "string":
+            $value = strval($value);
             break;
         }
       }

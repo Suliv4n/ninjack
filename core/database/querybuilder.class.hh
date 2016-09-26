@@ -2,13 +2,9 @@
 namespace Ninjack\Core\Database;
 use Ninjack\Core\Enum\DBOperator as DBOperator;
 use Ninjack\Core\Database\DBConnector as DBConnector;
+use Ninjack\Core\Database\Where as Where;
 
 
-type Where = shape(
-  "column" => string,
-  "value" => mixed,
-  "operator" => DBOperator,
-);
 
 class QueryBuilder{
 
@@ -63,12 +59,15 @@ class QueryBuilder{
   public function where(string $column, mixed $value, DBOperator $operator = DBOperator::EQUALS) : QueryBuilder{
 
     $this->where->add(
-      shape(
-        "column" => $column,
-        "operator" => $operator,
-        "value" => $value,
-      )
+      new Where($column, $value, $operator)
     );
+
+    return $this;
+  }
+
+  public function many_where(Vector<Where> $where) : QueryBuilder{
+
+    $this->where->addAll($where);
 
     return $this;
   }
@@ -165,9 +164,9 @@ class QueryBuilder{
         $query .= "\nAND ";
       }
 
-      $query .= $where["column"]." ".$where["operator"]. " ? ";
+      $query .= $where->get_column()." ".$where->get_operator(). " ? ";
       $first = false;
-      $this->variables->add($where["value"]);
+      $this->variables->add($where->get_value());
     }
 
     return $query;

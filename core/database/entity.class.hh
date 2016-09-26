@@ -3,6 +3,8 @@ namespace Ninjack\Core\Database;
 use Ninjack\Core\Application as Application;
 use Ninjack\Core\TypeHelper as TypeHelper;
 use Ninjack\Core\Database\Orm\ClassMap as ClassMap;
+use Ninjack\Core\Database\Where as Where;
+
 
 abstract class Entity{
 
@@ -13,7 +15,7 @@ abstract class Entity{
 
   private static Map<string, ClassMap> $class_maps = Map{};
 
-  public static function get(string $class) : Vector<Entity>{
+  public static function get(string $class, Vector<Where> $filters = Vector{}) : Vector<Entity>{
     if(!self::$class_maps->containsKey($class)){
       $class_map = new ClassMap($class);
       $class_map->map();
@@ -22,7 +24,7 @@ abstract class Entity{
     else{
       $class_map = self::$class_maps[$class];
     }
-    return $class_map->get();
+    return $class_map->get($filters);
   }
 
 
