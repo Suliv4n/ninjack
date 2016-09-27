@@ -63,4 +63,17 @@ class TypeHelper{
     return $paramaters;
   }
 
+  public static function get_generic_type(\ReflectionType $type) : ?string{
+    $string = $type->__toString();
+    $matches = Vector{};
+    preg_match('/<([^>]*)>$/', $string, $matches);
+    return $matches[1];
+  }
+
+  public static function get_str_type(\ReflectionType $type) : ?string{
+    $string = $type->__toString();
+    $string = preg_replace('/(<[^>]*)>$/',"", $string);
+    return $string;
+  }
+
 }
