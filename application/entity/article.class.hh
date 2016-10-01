@@ -2,6 +2,7 @@
 namespace Application\Entity;
 use Application\Entity\Article as Article;
 use Application\Entity\Comment as Comment;
+use Application\Entity\Tag as Tag;
 use Ninjack\Core\Database\Entity as Entity;
 
 <<Database("main"), Table("article")>>
@@ -9,7 +10,9 @@ class Article extends Entity{
 
   private ?Author $author;
 
-  private ?Vector $comments;
+  private Vector<Comment> $comments  = Vector{};
+
+  private Vector<Tag> $tags = Vector{};
 
   public function __construct(
     private ?int $id,
@@ -33,9 +36,14 @@ class Article extends Entity{
     $this->author = $author;
   }
 
-  <<OneToMany("Application\\Entity\\Comment", "comment.fk_article", "id")>>
+  <<OneToMany("id", "comment.fk_article")>>
   public function set_comments(Vector<Comment> $comments) : void{
     $this->comments = $comments;
+  }
+
+  <<ManyToMany("id","article_tag.id_article","article_tag.id_tag","tag.id")>>
+  public function set_tags(Vector<Tag> $tags) : void{
+    $this->tags = $tags;
   }
 
   public function set_title(string $title) : void{

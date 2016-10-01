@@ -14,6 +14,9 @@ class QueryBuilder{
   private Map<string,Map<string,mixed>> $insert;
   private Vector<Where> $where;
 
+  private Vector<string> $joins;
+  private Vector<string> $on;
+
   private Vector<mixed> $variables;
 
   private DBConnector $connector;
@@ -24,6 +27,8 @@ class QueryBuilder{
     $this->update = new Map(null);
     $this->insert = new Map(null);
     $this->where = new Vector(null);
+    $this->joins = new Vector(null);
+    $this->on = new Vector(null);
     $this->variables = new Vector(null);
 
     $this->connector = $connector;
@@ -65,6 +70,13 @@ class QueryBuilder{
     return $this;
   }
 
+  public function inerjoin(string $join, string $on) : QueryBuilder{
+    $this->joins->add($join);
+    $this->on->add($on);
+
+    return $this;
+  }
+
   public function many_where(Vector<Where> $where) : QueryBuilder{
 
     $this->where->addAll($where);
@@ -76,6 +88,7 @@ class QueryBuilder{
     $query  = "";
     $query .= $this->__generate_select_query();
     $query .= $this->__generate_from_query();
+    $query .= $this->__generate_joins_query();
     $query .= $this->__generate_update_query();
     $query .= $this->__generate_where_query();
     $query .= $this->__generate_insert_query();
@@ -164,14 +177,45 @@ class QueryBuilder{
         $query .= "\nAND ";
       }
 
-      $query .= $where->get_column()." ".$where->get_operator(). " ? ";
+
       $first = false;
-      $this->variables->add($where->get_value());
+
+      $where_value = $where->get_value();
+
+      if(is_array($where_value) || $where_value instanceof Traversable){
+
+        if(is_array($where_value)){
+          $values = new Vector($where_value);
+          $this->variables->addAll($where_value);
+        }
+        else if($where_value instanceof Traversable){
+          $values = new Vector($where_value);
+          $this->variables->addAll($where_value);
+        }
+
+
+        $query .= $where->get_column()." ".$where->get_operator(). " (".implode(",", array_fill(0,count($where->get_value()),"?")).")";
+      }
+      else{
+        $query .= $where->get_column()." ".$where->get_operator(). " ? ";
+        $this->variables->add($where->get_value());
+      }
     }
 
     return $query;
   }
 
+  public function __generate_joins_query() : string{
+    $query = "";
+
+    $first = true;
+
+    for ($i=0; $i<count($this->joins); $i++){
+      $query .= "\ninner join ".$this->joins[$i]." on ".$this->on[$i];
+    }
+
+    return $query;
+  }
 
 
   public function execute() : bool{

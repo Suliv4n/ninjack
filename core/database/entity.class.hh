@@ -2,7 +2,7 @@
 namespace Ninjack\Core\Database;
 use Ninjack\Core\Application as Application;
 use Ninjack\Core\TypeHelper as TypeHelper;
-use Ninjack\Core\Database\Orm\ClassMap as ClassMap;
+use Ninjack\Core\Database\Orm\ORMObject as ORMObject;
 use Ninjack\Core\Database\Where as Where;
 
 
@@ -13,11 +13,11 @@ abstract class Entity{
   const string PRIMARY_ATTRIBUTE = "PrimaryKey";
   const string GETTER_ATTRIBUTE = "Get";
 
-  private static Map<string, ClassMap> $class_maps = Map{};
+  private static Map<string, ORMObject> $class_maps = Map{};
 
   public static function get(string $class, Vector<Where> $filters = Vector{}) : Vector<Entity>{
     if(!self::$class_maps->containsKey($class)){
-      $class_map = new ClassMap($class);
+      $class_map = new ORMObject($class);
       $class_map->map();
       self::$class_maps[$class] = $class_map;
     }
@@ -75,7 +75,7 @@ abstract class Entity{
     return $primary_keys;
   }
 
-  private function __get_database() : ?DBConnector{
+  public function __get_database() : ?DBConnector{
     $class_reflection = new \ReflectionClass($this);
 
     $database_name_attribute = $class_reflection->getAttribute(self::DATABASE_ATTRIBUTE);
@@ -129,6 +129,11 @@ abstract class Entity{
 
     var_dump($primary_keys);
   }
+
+  public static function get_database(Entity $entity) : string{
+    return self::$class_maps[get_class($entity)]->get_database();
+  }
+
 
 
 }
