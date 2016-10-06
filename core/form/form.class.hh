@@ -1,10 +1,14 @@
 <?hh
 namespace Ninjack\Core\Form;
 use Ninjack\Core\Application as Application;
+use Ninjack\Core\Database\Orm\Field as Field;
+use Ninjack\Core\Database\Orm\ORMObject as ORMObject;
+use Ninjack\Core\Database\Entity as Entity;
 use Ninjack\Core\CSRFToken as CSRFToken;
 use Ninjack\Core\Form\FormInput as FormInput;
 use Ninjack\Core\Form\FormValidator as FormValidator;
 use Ninjack\Core\Exception\InvalidCSRFTokenException as InvalidCSRFTokenException;
+use Ninjack\Core\Form\Inputs\TextInput as TextInput;
 
 /**
  * An html form genrator and checker.
@@ -39,6 +43,9 @@ class Form{
    */
   private bool $csrf_protection = true;
 
+
+  private ?string $entity_bind_class;
+
   /**
    * Constructor.
    */
@@ -49,7 +56,7 @@ class Form{
   }
 
   /**
-   * Run all the inputs validators and generate errors strings.
+   * Run all the inputs validators and generate errors strings. (can be true only if post request)
    *
    * @return True of the form is valid, else false.
    */
@@ -79,7 +86,7 @@ class Form{
       }
     }
 
-    return $this->errors->isEmpty();
+    return $request->is_post() && $this->errors->isEmpty();
   }
 
   /**
@@ -174,5 +181,46 @@ class Form{
     $name = $this->name."_csrf_token";
     return $name;
   }
+
+  public function bind_entity_class(string $entity, ?Vector<FormInput> $inputs = null) : void{
+    $this->entity_bind_class = $entity;
+
+    if($inputs == null){
+      $fields = Entity::get_orm($entity)->get_fields();
+
+      foreach ($fields as $name => $field) {
+        $this->add_input(
+          new TextInput($name, $name),
+          Vector{}
+        );
+      }
+    }
+    else{
+        $this->inputs->addAll($inputs);
+    }
+
+  }
+
+  public function get_values() : Map<string, mixed>{
+    $values = Map{};
+    foreach($this->inputs as $input){
+      $values[$input->get_name()] = $input->get_value();
+    }
+
+    return $values;
+  }
+
+  public function get_entity(?string $class = null): Entity{
+    if($this->entity_bind_class == null && $class == null){
+      throw new Exception("No entity class binded.");
+    }
+    $entity_class = $class == null ? $this->entity_bind_class : $class;
+
+    $entity = Entity::get_from_data($entity_class ?? "", $this->get_values());
+
+    return $entity;
+  }
+
+
 
 }

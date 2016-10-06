@@ -16,6 +16,19 @@ abstract class Entity{
   private static Map<string, ORMObject> $class_maps = Map{};
 
   public static function get(string $class, Vector<Where> $filters = Vector{}) : Vector<Entity>{
+    $class_map = self::get_orm($class);
+    return $class_map->get($filters);
+  }
+
+  public static function get_from_data(string $class, Map<string, mixed> $data) : Entity{
+    $class_map = self::get_orm($class);
+    $entity = $class_map->get_from_data($data);
+
+    return $entity;
+  }
+
+  public static function get_orm(string $class) : ORMObject{
+
     if(!self::$class_maps->containsKey($class)){
       $class_map = new ORMObject($class);
       $class_map->map();
@@ -24,7 +37,8 @@ abstract class Entity{
     else{
       $class_map = self::$class_maps[$class];
     }
-    return $class_map->get($filters);
+
+    return $class_map;
   }
 
 
@@ -133,7 +147,5 @@ abstract class Entity{
   public static function get_database(Entity $entity) : string{
     return self::$class_maps[get_class($entity)]->get_database();
   }
-
-
 
 }

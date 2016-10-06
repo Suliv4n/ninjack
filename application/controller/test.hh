@@ -6,8 +6,12 @@ use Ninjack\Core\Response as Response;
 use Ninjack\Core\Database\Entity as Entity;
 use Ninjack\Core\Enum\DBOperator as DBOperator;
 use Application\Entity\User as User;
+use Application\Entity\Author as Author;
 use Ninjack\Core\Database\QueryBuilder as QueryBuilder;
 use Ninjack\Core\User\UserInterface as UserInterface;
+use Ninjack\Core\Form\Form as Form;
+use Ninjack\Core\Form\Inputs\TextInput as TextInput;
+use Ninjack\Core\Form\Inputs\SubmitInput as SubmitInput;
 
 class Test extends Controller{
 
@@ -18,16 +22,27 @@ class Test extends Controller{
   <<Action>>
   public function welcome(string $name) : void{
 
-    $users = Entity::get(User::class);
-    $user = $users[0];
+    //$users = Entity::get(User::class);
+    $form = new Form();
+    $form->bind_entity_class(
+      Author::class,
+      Vector{
+        new TextInput("nom"),
+        new SubmitInput("envoyer"),
+      }
+    );
 
-    if($user instanceof UserInterface){
-      //Application::get_instance()->session()->set_user($user);
+
+    if($form->run()){
+
+      $author = $form->get_entity();
+
+      echo "<pre>";
+      var_dump($author);
+      echo "</pre>";
     }
 
-    $user = Application::get_instance()->session()->get_user();
-
-    var_dump($user);die();
+    $this->add_to_view('form',$form);
 
   }
 
