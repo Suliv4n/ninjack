@@ -1,2 +1,2 @@
 <?hh
-echo $form->get_element();
+echo <div>Thème pas défaut</div>;

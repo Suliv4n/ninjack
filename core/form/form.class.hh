@@ -2,6 +2,7 @@
 namespace Ninjack\Core\Form;
 use Ninjack\Core\Application as Application;
 use Ninjack\Core\Database\Orm\Field as Field;
+use Ninjack\Core\Database\Orm\Field\ForeignKey as ForeignKey;
 use Ninjack\Core\Database\Orm\ORMObject as ORMObject;
 use Ninjack\Core\Database\Entity as Entity;
 use Ninjack\Core\CSRFToken as CSRFToken;
@@ -189,6 +190,7 @@ class Form{
       $fields = Entity::get_orm($entity)->get_fields();
 
       foreach ($fields as $name => $field) {
+        
         $this->add_input(
           new TextInput($name, $name),
           Vector{}

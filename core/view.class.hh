@@ -19,14 +19,17 @@ class View{
    */
   private Map<string, mixed> $variables;
 
+  private ?string $theme;
+
   /**
    * The constructor.
    *
    * @param string $name the view name.
    */
-  public function __construct(string $name){
+  public function __construct(string $name, ?string $theme = null){
     $this->name = $name;
     $this->variables = new Map(null);
+    $this->theme = $theme;
   }
 
   /**
@@ -67,7 +70,7 @@ class View{
    */
   public function get_render() : string{
 
-    $view_file = Application::get_instance()->loader()->get_view_file($this->name);
+    $view_file = Application::get_instance()->loader()->get_view_file($this->name, $this->theme);
 
     Application::get_instance()->loader()->load_all_widgets();
 

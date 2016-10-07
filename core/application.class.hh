@@ -4,6 +4,7 @@ namespace Ninjack\Core;
 use Ninjack\Core\Response as Response;
 use Ninjack\Core\Session as Session;
 use Ninjack\Core\Loader as Loader;
+use Ninjack\Core\Configuration as Configuration;
 use Ninjack\Core\Database\DBConnector as DBConnector;
 use Ninjack\Core\Exception\NoActionException as NoActionException;
 use Ninjack\Core\Exception\CLIException as CLIException;
@@ -42,6 +43,8 @@ class Application{
    */
    private Session $session;
 
+   private Configuration $configuration;
+
    private Vector<string> $cli_arguments;
 
   /**
@@ -53,6 +56,8 @@ class Application{
     $this->loader = Loader::get_instance();
 
     $this->session = Session::get_instance();
+
+    $this->configuration = $this->loader->load_configuration("application.hh");
 
     $this->cli_arguments = Vector{};
   }
@@ -105,7 +110,7 @@ class Application{
 
     $command = $this->loader->load_command($command_name);
     if($command != null){
-      //t@todo arguments
+      //@todo arguments
       $command->go($command_method, Vector{});
     }
     else{
@@ -187,6 +192,10 @@ class Application{
    */
   public function get_route_rule() : (?string, ?string){
     return $this->router->get_rule();
+  }
+
+  public function get_configuration() : Configuration{
+    return $this->configuration;
   }
 
   /**

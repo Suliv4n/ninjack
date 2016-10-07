@@ -9,6 +9,7 @@ define("VIEW_PATH", APPLICATION_PATH."view".DS);
 define("FORM_PATH", APPLICATION_PATH."form".DS);
 define("COMMAND_PATH", APPLICATION_PATH."command".DS);
 define("CORE_VIEW_PATH", ROOT."core".DS."view".DS);
+define("THEME_PATH", APPLICATION_PATH."theme".DS);
 
 require_once ROOT."core/autoloader.class.hh";
 Ninjack\Core\AutoLoader::register();

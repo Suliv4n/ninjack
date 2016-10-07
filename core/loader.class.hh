@@ -101,8 +101,14 @@ class Loader{
    *
    * @return the  view absolute file path.
    */
-  public function get_view_file(string $file) : string{
-    $path = VIEW_PATH.$file.".hh";
+  public function get_view_file(string $file, ?string $theme = null) : string{
+
+    if($theme != null){
+      $path = THEME_PATH.$theme.DS."view".DS.$file.".hh";
+    }
+    else{
+      $path = VIEW_PATH.$file.".hh";
+    }
 
     if(!file_exists($path)){
       $path = CORE_VIEW_PATH.$file.".hh";

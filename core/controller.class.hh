@@ -2,9 +2,9 @@
 namespace Ninjack\Core;
 use Ninjack\Core\TypeHelper as TypeHelper;
 use Ninjack\Core\View as View;
+use Ninjack\Core\Application as Application;
 use Ninjack\Core\Form\Form as Form;
 use Ninjack\Core\Response as Response;
-use Ninjack\Core\Application as Application;
 use Ninjack\Core\Database\DBConnector as DBConnector;
 use Ninjack\Core\Exception\NoActionException as NoActionException;
 
@@ -32,11 +32,16 @@ class Controller{
    */
   private ?Response $response;
 
+  private ?string $theme = null;
+
+  protected Application $application;
+
   /**
    * Controller constructor.
    */
   public function __construct(){
     $this->view = new View("");
+    $this->application = Application::get_instance();
   }
 
   /**
@@ -63,7 +68,10 @@ class Controller{
       $method = new \ReflectionMethod($this, $action);
       $is_action = isset($method->getAttributes()["Action"]);
 
-      $this->view = new View($controller."/".$action);
+      $this->view = new View($controller."/".$action, $this->theme ??
+        strval($this->application->get_configuration()->get("default_theme"))
+      );
+
       $parameters = $this->cleaned_parameters($action, $parameters);
       $this->response = new Response($this->view);
       call_user_method_array($action, $this, $parameters->toArray());
@@ -96,7 +104,7 @@ class Controller{
   }
 
   public function get_database(string $name) : ?DBConnector{
-    $connector = Application::get_instance()->load_database($name);
+    $connector = $this->application->load_database($name);
     if($connector != null){
       $connector->initialize();
       return $connector;
@@ -142,7 +150,7 @@ class Controller{
    * @return the generated Form.
    */
   public function load_form($name) : Form {
-    return Application::get_instance()->loader()->load_form($name);
+    return $this->application->loader()->load_form($name);
   }
 
 }
