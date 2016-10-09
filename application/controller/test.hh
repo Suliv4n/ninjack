@@ -6,7 +6,7 @@ use Ninjack\Core\Response as Response;
 use Ninjack\Core\Database\Entity as Entity;
 use Ninjack\Core\Enum\DBOperator as DBOperator;
 use Application\Entity\User as User;
-use Application\Entity\Author as Author;
+use Application\Entity\Article as Article;
 use Ninjack\Core\Database\QueryBuilder as QueryBuilder;
 use Ninjack\Core\User\UserInterface as UserInterface;
 use Ninjack\Core\Form\Form as Form;
@@ -24,17 +24,11 @@ class Test extends Controller{
 
     //$users = Entity::get(User::class);
     $form = new Form();
-    $form->bind_entity_class(
-      Author::class,
-      Vector{
-        new TextInput("nom"),
-        new SubmitInput("envoyer"),
-      }
-    );
+    $form->bind_entity_class(Article::class);
 
+    $form->add_input(new SubmitInput("envoyer"), Vector{});
 
     if($form->run()){
-
       $author = $form->get_entity();
 
       echo "<pre>";

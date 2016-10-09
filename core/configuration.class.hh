@@ -67,8 +67,16 @@ class Configuration{
    *
    * @return mixed the requested variable value.
    */
-  public function get($variable) : mixed{
+  public function get(string $variable) : mixed{
     return $this->variables[$variable];
+  }
+
+  public function get_string(string $variable, ?string $default = null) : ?string{
+    if($this->variables[$variable] == null){
+      return $default;
+    }
+
+    return strval($this->variables[$variable]);
   }
 
 }

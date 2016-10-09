@@ -148,4 +148,15 @@ abstract class Entity{
     return self::$class_maps[get_class($entity)]->get_database();
   }
 
+  public function __toString() : string{
+    return $this->__get_table();
+  }
+
+  public function get_primary_key_value() : mixed{
+    $orm = self::get_orm(get_class($this));
+    $pk = $orm->get_primary_key_value($this);
+
+    return $pk;
+  }
+
 }

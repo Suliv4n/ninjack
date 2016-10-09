@@ -105,10 +105,12 @@ class Loader{
 
     if($theme != null){
       $path = THEME_PATH.$theme.DS."view".DS.$file.".hh";
+      if(file_exists($path)){
+        return $path;
+      }
     }
-    else{
-      $path = VIEW_PATH.$file.".hh";
-    }
+
+    $path = VIEW_PATH.$file.".hh";
 
     if(!file_exists($path)){
       $path = CORE_VIEW_PATH.$file.".hh";

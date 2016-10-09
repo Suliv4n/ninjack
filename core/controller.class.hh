@@ -68,8 +68,11 @@ class Controller{
       $method = new \ReflectionMethod($this, $action);
       $is_action = isset($method->getAttributes()["Action"]);
 
-      $this->view = new View($controller."/".$action, $this->theme ??
-        strval($this->application->get_configuration()->get("default_theme"))
+      $theme = $this->theme ?? $this->application->get_configuration()->get_string("default_theme");
+
+
+      $this->view = new View($controller."/".$action,
+        $theme
       );
 
       $parameters = $this->cleaned_parameters($action, $parameters);

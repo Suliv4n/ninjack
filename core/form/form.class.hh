@@ -10,6 +10,7 @@ use Ninjack\Core\Form\FormInput as FormInput;
 use Ninjack\Core\Form\FormValidator as FormValidator;
 use Ninjack\Core\Exception\InvalidCSRFTokenException as InvalidCSRFTokenException;
 use Ninjack\Core\Form\Inputs\TextInput as TextInput;
+use Ninjack\Core\Form\Inputs\SelectInput as SelectInput;
 
 /**
  * An html form genrator and checker.
@@ -190,11 +191,18 @@ class Form{
       $fields = Entity::get_orm($entity)->get_fields();
 
       foreach ($fields as $name => $field) {
-        
-        $this->add_input(
-          new TextInput($name, $name),
-          Vector{}
-        );
+        if($field instanceof ForeignKey){
+          $this->add_input(
+            new SelectInput($name, $name, $field->get_choices()),
+            Vector{}
+          );
+        }
+        else{
+          $this->add_input(
+            new TextInput($name, $name),
+            Vector{}
+          );
+        }
       }
     }
     else{

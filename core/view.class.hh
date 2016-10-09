@@ -19,7 +19,7 @@ class View{
    */
   private Map<string, mixed> $variables;
 
-  private ?string $theme;
+  private ?string $theme = null;
 
   /**
    * The constructor.
@@ -69,7 +69,6 @@ class View{
    * @return string the render.
    */
   public function get_render() : string{
-
     $view_file = Application::get_instance()->loader()->get_view_file($this->name, $this->theme);
 
     Application::get_instance()->loader()->load_all_widgets();
@@ -84,16 +83,36 @@ class View{
     ob_end_clean();
 
     return $content;
-
   }
 
+  public function asset(string $path, ?string $theme = null) : string{
 
+    $url = Application::get_instance()->get_request()->get_base_url();
+
+    if(strlen($path) > 0 && $path[0] != "/"){
+      $path = "/".$path;
+    }
+
+    if($this->theme != null || $theme != null){
+      $asset_path = THEME_PATH.($theme ?? $this->theme).DS."assets".$path;
+      if(file_exists($asset_path)){
+        return $url."/theme/".($theme ?? $this->theme)."/assets".$path;
+      }
+
+    }
+
+    return $url."/assets".$path;
+  }
 
   /**
    * Prints the render.
    */
   public function render() : void{
     echo $this->get_render();
+  }
+
+  public function get_theme() : ?string {
+    return $this->theme;
   }
 
 }
