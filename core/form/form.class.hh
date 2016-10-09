@@ -3,6 +3,7 @@ namespace Ninjack\Core\Form;
 use Ninjack\Core\Application as Application;
 use Ninjack\Core\Database\Orm\Field as Field;
 use Ninjack\Core\Database\Orm\Field\ForeignKey as ForeignKey;
+use Ninjack\Core\Database\Orm\Field\ManyToMany as ManyToMany;
 use Ninjack\Core\Database\Orm\ORMObject as ORMObject;
 use Ninjack\Core\Database\Entity as Entity;
 use Ninjack\Core\CSRFToken as CSRFToken;
@@ -11,6 +12,7 @@ use Ninjack\Core\Form\FormValidator as FormValidator;
 use Ninjack\Core\Exception\InvalidCSRFTokenException as InvalidCSRFTokenException;
 use Ninjack\Core\Form\Inputs\TextInput as TextInput;
 use Ninjack\Core\Form\Inputs\SelectInput as SelectInput;
+use Ninjack\Core\Form\Inputs\HiddenInput as HiddenInput;
 
 /**
  * An html form genrator and checker.
@@ -180,7 +182,7 @@ class Form{
   }
 
   private function __get_csrf_token_input_name(){
-    $name = $this->name."_csrf_token";
+    $name = $this->entity_bind_class.$this->name."_csrf_token";
     return $name;
   }
 
@@ -191,9 +193,21 @@ class Form{
       $fields = Entity::get_orm($entity)->get_fields();
 
       foreach ($fields as $name => $field) {
-        if($field instanceof ForeignKey){
+        if($field->is_primary_key()){
+          $this->add_input(
+            new HiddenInput($name),
+            Vector{}
+          );
+        }
+        else if($field instanceof ForeignKey){
           $this->add_input(
             new SelectInput($name, $name, $field->get_choices()),
+            Vector{}
+          );
+        }
+        else if($field instanceof ManyToMany){
+          $this->add_input(
+            new SelectInput($name, $name, $field->get_choices(), Map{"multiple" => true}),
             Vector{}
           );
         }
