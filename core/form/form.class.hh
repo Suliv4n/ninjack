@@ -4,6 +4,7 @@ use Ninjack\Core\Application as Application;
 use Ninjack\Core\Database\Orm\Field as Field;
 use Ninjack\Core\Database\Orm\Field\ForeignKey as ForeignKey;
 use Ninjack\Core\Database\Orm\Field\ManyToMany as ManyToMany;
+use Ninjack\Core\Database\Orm\Field\ManyToOne as ManyToOne;
 use Ninjack\Core\Database\Orm\ORMObject as ORMObject;
 use Ninjack\Core\Database\Entity as Entity;
 use Ninjack\Core\CSRFToken as CSRFToken;
@@ -193,29 +194,31 @@ class Form{
       $fields = Entity::get_orm($entity)->get_fields();
 
       foreach ($fields as $name => $field) {
-        if($field->is_primary_key()){
-          $this->add_input(
-            new HiddenInput($name),
-            Vector{}
-          );
-        }
-        else if($field instanceof ForeignKey){
-          $this->add_input(
-            new SelectInput($name, $name, $field->get_choices()),
-            Vector{}
-          );
-        }
-        else if($field instanceof ManyToMany){
-          $this->add_input(
-            new SelectInput($name, $name, $field->get_choices(), Map{"multiple" => true}),
-            Vector{}
-          );
-        }
-        else{
-          $this->add_input(
-            new TextInput($name, $name),
-            Vector{}
-          );
+        if(!$field instanceof ManyToOne){
+          if($field->is_primary_key()){
+            $this->add_input(
+              new HiddenInput($name),
+              Vector{}
+            );
+          }
+          else if($field instanceof ForeignKey){
+            $this->add_input(
+              new SelectInput($name, $name, $field->get_choices()),
+              Vector{}
+            );
+          }
+          else if($field instanceof ManyToMany){
+            $this->add_input(
+              new SelectInput($name, $name, $field->get_choices(), Map{"multiple" => true}),
+              Vector{}
+            );
+          }
+          else{
+            $this->add_input(
+              new TextInput($name, $name),
+              Vector{}
+            );
+          }
         }
       }
     }

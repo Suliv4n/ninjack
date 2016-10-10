@@ -211,7 +211,8 @@ abstract class FormInput{
    */
   public function get_value() : mixed{
     $request = Application::get_instance()->get_request();
-    return $request->post($this->name);
+    $name = str_replace(".", "_", $this->name);
+    return $request->post($name);
   }
 
 }

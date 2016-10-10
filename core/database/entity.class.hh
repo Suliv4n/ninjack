@@ -106,6 +106,8 @@ abstract class Entity{
   }
 
   public final function save() : void{
+    self::get_orm(get_class($this))->save($this);
+    /*
     $primary_keys = new Map(null);
     $columns = Map{};
 
@@ -142,6 +144,7 @@ abstract class Entity{
     }
 
     var_dump($primary_keys);
+    */
   }
 
   public static function get_database(Entity $entity) : string{
