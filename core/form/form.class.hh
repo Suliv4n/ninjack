@@ -228,6 +228,10 @@ class Form{
 
   }
 
+  public function set_csrf_protection(bool $enable) : void{
+    $this->csrf_protection = $enable;
+  }
+
   public function get_values() : Map<string, mixed>{
     $values = Map{};
     foreach($this->inputs as $input){

@@ -27,6 +27,7 @@ class Test extends Controller{
     $form->bind_entity_class(Article::class);
 
     $form->add_input(new SubmitInput("envoyer"), Vector{});
+    $form->set_csrf_protection(false);
 
     if($form->run()){
       $author = $form->get_entity();

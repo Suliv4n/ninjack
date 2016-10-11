@@ -22,6 +22,7 @@ abstract class Entity{
 
   public static function get_from_data(string $class, Map<string, mixed> $data) : Entity{
     $class_map = self::get_orm($class);
+    var_dump($data);
     $entity = $class_map->get_from_data($data);
 
     return $entity;
