@@ -31,9 +31,18 @@ class Article extends Entity{
     return $this->title;
   }
 
+
+
+
+
   <<ForeignKey("fk_author","author.id")>>
   public function set_author(Author $author) : void{
     $this->author = $author;
+  }
+
+  <<Get("fk_author")>>
+  public function get_author() : ?Author{
+    return $this->author;
   }
 
   <<OneToMany("id", "comment.fk_article")>>
@@ -44,6 +53,11 @@ class Article extends Entity{
   <<ManyToMany("id","article_tag.id_article","article_tag.id_tag","tag.id")>>
   public function set_tags(Vector<Tag> $tags) : void{
     $this->tags = $tags;
+  }
+
+  <<Get("article_tag.id_tag")>>
+  public function get_tags() : Vector<Tag>{
+    return $this->tags;
   }
 
   public function set_title(string $title) : void{

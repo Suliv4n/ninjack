@@ -12,6 +12,7 @@ class QueryBuilder{
   private Map<string,string> $from;
   private Map<string,Map<string,mixed>> $update;
   private Map<string,Map<string,mixed>> $insert;
+  private ?string $delete;
   private Vector<Where> $where;
 
   private Vector<string> $joins;
@@ -60,6 +61,12 @@ class QueryBuilder{
     return $this;
   }
 
+  public function delete(string $table) : QueryBuilder{
+    $this->delete = $table;
+
+    return $this;
+  }
+
 
   public function where(string $column, mixed $value, DBOperator $operator = DBOperator::EQUALS) : QueryBuilder{
 
@@ -90,6 +97,7 @@ class QueryBuilder{
     $query .= $this->__generate_from_query();
     $query .= $this->__generate_joins_query();
     $query .= $this->__generate_update_query();
+    $query .= $this->__generate_delete_query();
     $query .= $this->__generate_where_query();
     $query .= $this->__generate_insert_query();
 
@@ -212,6 +220,16 @@ class QueryBuilder{
 
     for ($i=0; $i<count($this->joins); $i++){
       $query .= "\ninner join ".$this->joins[$i]." on ".$this->on[$i];
+    }
+
+    return $query;
+  }
+
+  public function __generate_delete_query() : string{
+
+    $query = "";
+    if(!empty($this->delete)){
+      $query = "delete from ".$this->delete."\n";
     }
 
     return $query;

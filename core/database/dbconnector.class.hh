@@ -88,4 +88,10 @@ class DBConnector{
     return new QueryBuilder($this);
   }
 
+  public function get_last_insert_id() : mixed{
+    if($this->pdo !== null){
+      return $this->pdo->lastInsertId();
+    }
+  }
+
 }

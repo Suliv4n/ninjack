@@ -30,11 +30,13 @@ class Test extends Controller{
     $form->set_csrf_protection(false);
 
     if($form->run()){
-      $author = $form->get_entity();
+      $article = $form->get_entity();
 
       echo "<pre>";
-      var_dump($author);
+      var_dump($article);
       echo "</pre>";
+
+      $article->save();
     }
 
     $this->add_to_view('form',$form);
