@@ -41,6 +41,12 @@ class File{
     return null;
   }
 
+  /**
+   * Returns the namespace of a given filepath.$
+   *
+   * @param string $path the path to a file.
+   * @return string the namespace corresponding to the pâth.
+   */
   public static function path_to_namespace(string $path) : string{
 
     $path = self::remove_root_path($path);
@@ -56,11 +62,24 @@ class File{
     return implode("\\", $namespace_parts);
   }
 
-  public static function remove_root_path(string $path) : string{
+  /**
+   * Transforme an absolute path to a relative path from the root application.
+   *
+   * @param string $path the absolute path of a file.
+   * @return the relative path to the application.
+   */
+  private static function remove_root_path(string $path) : string{
     $root_regex = "/^".preg_quote(ROOT, "/")."/";
     return preg_replace($root_regex, "", $path);
   }
 
+  /**
+   * Returns true if the path given is absolute else return false.
+   *
+   * @param string $path the path to test.
+   *
+   * @return bool true if the path given is absolute else false.
+   */
   public static function is_absolute_path(string $path) : bool{
     return strlen($path) > 0 && $path[0] == "/";
   }

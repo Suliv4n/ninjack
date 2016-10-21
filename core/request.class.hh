@@ -40,6 +40,11 @@ class Request{
     return isset($_POST[$name]) ? $_POST[$name] : $default;
   }
 
+  /**
+   * Returns true if the request is a POST method.
+   *
+   * @return true if the request is post, else false.
+   */
   public function is_post() : bool{
     return $_SERVER['REQUEST_METHOD'] == 'POST';
   }

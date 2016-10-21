@@ -3,15 +3,36 @@ namespace Ninjack\Core\Database\Orm\Field;
 use Ninjack\Core\Database\Entity as Entity;
 use Ninjack\Core\TypeHelper as TypeHelper;
 
+/**
+ * Database data field.
+ *
+ * @author Sulivan.
+ */
 class Field{
 
+  /**
+   * Name of the field.
+   */
   protected string $name;
 
+  /**
+   * The setter method.
+   */
   protected ?\ReflectionMethod $setter;
+
+  /**
+   * The getter method.
+   */
   protected ?\ReflectionMethod $getter;
 
+  /**
+   * True if the field is a primary key.
+   */
   protected bool $primary_key;
 
+  /**
+   * The constructor.
+   */
   public function __construct(string $name, bool $primary_key = false){
     $this->name = $name;
     $this->primary_key = $primary_key;

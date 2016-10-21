@@ -113,6 +113,9 @@ class Application{
 
   }
 
+  /**
+   * Run the application from the cli.
+   */
   public function run_command() : void{
     if(!$this->is_cli()){
       throw new CLIException("Command can be run only on CLI");
@@ -261,20 +264,45 @@ class Application{
     return $this->session;
    }
 
+   /**
+    * Returns true if the application is ran via cli.
+    *
+    * @return true if the application is ran via cli, else false.
+    */
    public function is_cli() : bool{
      return substr(PHP_SAPI, 0, 3) == "cli";
    }
 
+   /**
+    * Set the cli arguments if the application is ran via cli.
+    *
+    * @param Vector<string> $argv The cli arguments.
+    */
    public function set_cli_arguments(Vector<string> $argv) : void{
      if($this->is_cli()){
        $this->cli_arguments = $argv;
      }
    }
 
+   /**
+    * Returns the cli arguments.
+    *
+    * @return Vector<string> the cli arguments.
+    */
    public function get_cli_arguments() : Vector<string>{
      return $this->cli_arguments;
    }
 
+   /**
+    * Returns the absolute file path of given file in the application.
+    * If the file was not found in the application, it will find and return the file in the parents
+    * applications.
+    *
+    * @param string $file the file to search.
+    *
+    * @return ?string the absolute filepath of the application or parent applications. Returns null
+    * if the file not exists in the application or parent applications.
+    */
    public function get_file_from_application(string $file) : ?string{
      if(strlen($file) > 0 && $file[0] == DS){
        $file = substr($file, 1);
@@ -287,7 +315,7 @@ class Application{
      }
      else{
        foreach($this->parents as $parent){
-
+          //@todo parents of parent.
          $filepath = $parent;
          if(strlen($filepath) > 0 && $filepath[strlen($filepath)-1] != DS){
            $filepath .= DS;

@@ -55,14 +55,29 @@ class TypeHelper{
       return $value;
   }
 
-  public static function bind_parameters_function(\ReflectionFunctionAbstract $method, $paramaters) : Vector<mixed>{
+  /**
+   * Cast all parameters given to match the type of a function parameters.
+   *
+   * @param \ReflectionFunctionAbstract the function that parameters types have to match.
+   * @param Vector<string> $paramaters parameters to cast.
+   */
+  public static function bind_parameters_function(\ReflectionFunctionAbstract $method, Vector<string> $paramaters) : Vector<mixed>{
+    $parsed_parameters = Vector{};
     foreach ($method->getParameters() as $i => $parameter) {
-      $paramaters[$i] = self::bind_parameter_value_type($parameter, $paramaters[$i]);
+      $parsed_parameters[$i] = self::bind_parameter_value_type($parameter, $paramaters[$i]);
     }
 
-    return $paramaters;
+    return $parsed_parameters;
   }
 
+  /**
+   * Returns the generic types of a type.
+   *
+   * @param \ReflectionType $type the type to parse.
+   *
+   * @return ?string the genric types of a class or null
+   * the class has no generic class.
+   */
   public static function get_generic_type(\ReflectionType $type) : ?string{
     $string = $type->__toString();
     $matches = Vector{};
@@ -70,6 +85,11 @@ class TypeHelper{
     return $matches[1];
   }
 
+  /**
+   * Returns the class of a type without Generic types representation.
+   *
+   * @return string The class of a type without Generic types representation.
+   */
   public static function get_str_type(\ReflectionType $type) : ?string{
     $string = $type->__toString();
     $string = preg_replace('/(<[^>]*)>$/',"", $string);

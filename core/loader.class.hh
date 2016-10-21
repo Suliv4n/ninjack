@@ -70,6 +70,13 @@ class Loader{
 
   }
 
+  /**
+   * Load a command given by name.
+   * @param string $command the command name.
+   *
+   * @return ?Ninjack\Core\Cli\Command the command loaded, or null
+   * if the command is not found.
+   */
   public function load_command(string $command) : ?Command{
     $path = COMMAND_PATH.strtolower($command).".hh";
 

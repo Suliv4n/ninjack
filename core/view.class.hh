@@ -111,6 +111,11 @@ class View{
     echo $this->get_render();
   }
 
+  /**
+   * Returns the theme name of the view or null if no theme is used.
+   *
+   * @return ?string the theme name of the view or null if no theme is used.
+   */
   public function get_theme() : ?string {
     return $this->theme;
   }

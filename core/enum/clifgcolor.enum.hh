@@ -1,6 +1,9 @@
 <?hh
 namespace Ninjack\Core\Enum;
 
+/**
+ * Cli foreground colors.
+ */
 enum CLIFGColor: string {
   BLACK = "0;30";
   DARK_GRAY = "1;30";
