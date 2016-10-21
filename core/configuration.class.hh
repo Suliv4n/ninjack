@@ -36,7 +36,7 @@ class Configuration{
    * @return Ninjack\Core\Configuration the configuration object loaded.
    */
   public static function load(string $file) : Configuration{
-    $configuration = new Configuration(CONF_PATH.$file);
+    $configuration = new Configuration($file);
 
     $configuration->include_file();
 

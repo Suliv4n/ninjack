@@ -1,5 +1,0 @@
-<?hh
-include "bootstrap.hh";
-
-Ninjack\Core\Application::get_instance()->set_cli_arguments(new Vector($argv));
-Ninjack\Core\Application::get_instance()->run_command();

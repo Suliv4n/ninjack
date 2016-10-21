@@ -47,6 +47,8 @@ class Application{
 
    private Vector<string> $cli_arguments;
 
+   private Map<string,string> $parents = Map{};
+
   /**
     * The application constructor.
     */
@@ -57,9 +59,20 @@ class Application{
 
     $this->session = Session::get_instance();
 
-    $this->configuration = $this->loader->load_configuration("application.hh");
+    $this->configuration = Configuration::load(ROOT.CONF_PATH."application.hh");
 
     $this->cli_arguments = Vector{};
+
+    $extends = $this->configuration->get("extends");
+
+    if($extends != null && $extends instanceof Vector){
+      foreach ($extends as $application) {
+        $path_parts = explode(DS, $application);
+        $name = array_pop($path_parts);
+        $this->parents[$name] = implode(DS, $path_parts).DS.str_replace(".", DS, $name);
+      }
+    }
+
   }
 
   /**
@@ -260,6 +273,34 @@ class Application{
 
    public function get_cli_arguments() : Vector<string>{
      return $this->cli_arguments;
+   }
+
+   public function get_file_from_application(string $file) : ?string{
+     if(strlen($file) > 0 && $file[0] == DS){
+       $file = substr($file, 1);
+     }
+
+     $filepath = ROOT.$file;
+
+     if(file_exists($filepath)){
+       return $filepath;
+     }
+     else{
+       foreach($this->parents as $parent){
+
+         $filepath = $parent;
+         if(strlen($filepath) > 0 && $filepath[strlen($filepath)-1] != DS){
+           $filepath .= DS;
+         }
+         $filepath .= $file;
+
+         if(file_exists($filepath)){
+           return $filepath;
+         }
+       }
+     }
+
+     return null;
    }
 
 }
