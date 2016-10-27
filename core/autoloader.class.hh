@@ -15,8 +15,44 @@ class Autoloader{
   /*
    * Registers the autoloader.
    */
-  public static function register(){
+  public static function register() : void{
     spl_autoload_register(array(__CLASS__, 'autoload'));
+  }
+
+  public static function add_scope(string $namespace, string $directory) : bool{
+    if(self::$scopes->containsKey($namespace)){
+      return false;
+    }
+    self::$scopes[$namespace] = $directory;
+    return true;
+  }
+
+  public static function get_namespace_filepath(string $filepath) : string{
+
+    if(!is_dir($filepath)){
+      $filepath = dirname($filepath);
+    }
+
+    $scopes = self::$scopes->toArray();
+    usort($scopes, ($a, $b) ==> {return strlen($a) < strlen($b);});
+
+    $namespace = "";
+    foreach (self::$scopes as $ns => $path) {
+      if(preg_match("/^".preg_quote($path, "/")."/", $filepath)){
+        $namespace = $ns;
+        $filepath = preg_replace("/^".preg_quote($path, "/")."/", "", $filepath);
+      }
+    }
+
+
+    foreach (explode(DIRECTORY_SEPARATOR, $filepath) as $part) {
+      if(strlen($part) > 0){
+        $namespace .= "\\".ucfirst($part);
+      }
+    }
+
+    return $namespace;
+
   }
 
   /**
@@ -25,15 +61,21 @@ class Autoloader{
    * @param string $class the class name.
    *
    */
-  private static function autoload(string $class) : void{
-    $parts = preg_split("#\\\#", $class);
+  private function autoload(string $class) : void{
+    $parts = explode("\\", $class);
 
-    //@todo constant ?
+    //@todo scope
     $scope = "";
-    if(self::$scopes->containsKey($parts[0])){
-        $scope = self::$scopes[$parts[0]];
-        array_shift($parts);
+    foreach (self::$scopes as $namespace => $path) {
+      if(preg_match("/^".preg_quote($namespace, "/")."/", $class)){
+        $spaces = array_map(($part) ==> strtolower($part), explode("\\", $namespace));
+        $common = implode(DIRECTORY_SEPARATOR, $spaces);
+        $scope = str_replace("/".preg_quote($common, "$/")."/", "", $path).DIRECTORY_SEPARATOR;
+
+        break;
+      }
     }
+
 
     $className = array_pop($parts);
 

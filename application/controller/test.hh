@@ -21,7 +21,6 @@ class Test extends Controller{
 
   <<Action>>
   public function welcome(string $name) : void{
-
     //$users = Entity::get(User::class);
     $form = new Form();
     $form->bind_entity_class(Article::class);

@@ -6,6 +6,9 @@ use Ninjack\Core\Controller as Controller;
 use Ninjack\Core\Cli\Command as Command;
 use Ninjack\Core\Form\Form as Form;
 use Ninjack\Core\Helper\File as File;
+use Ninjack\Core\Autoloader as Autoloader;
+use Ninjack\Core\Application as Application;
+use Ninjack\Core\Exception\FileNotFoundException as FileNotFoundException;
 
 /**
  * A singleton class to load some component of the applciation (view, configuration, controller).
@@ -13,6 +16,12 @@ use Ninjack\Core\Helper\File as File;
  * @author Sulivan
  */
 class Loader{
+
+  const string CONFIGURATION_PATH = "conf".DS;
+  const string THEME_PATH = "theme".DS;
+  const string VIEW_PATH = "view".DS;
+  const string CORE_VIEW_PATH = CORE_PATH."view".DS;
+  const string CONTROLLER_PATH = "controller".DS;
 
   private bool $widgets_loaded = false;
 
@@ -30,10 +39,19 @@ class Loader{
    *
    * @param string $file the configuration file name.
    *
+   * @throws Ninjack\Core\Exception\FileNotFoundException when no configuration file was found.
+   *
    * @return Ninjack\Core\Configuration the configuration object loaded.
    */
   public function load_configuration(string $file) : Configuration{
-    return Configuration::load($file);
+
+    $filepath = Application::get_instance()->get_file_from_application(self::CONFIGURATION_PATH.$file);
+
+    if($filepath === null){
+      throw new FileNotFoundException("Configuration file ". $file ." was not found.");
+    }
+
+    return Configuration::load($filepath);
   }
 
   /**
@@ -45,15 +63,20 @@ class Loader{
    * was not found.
    */
   public function load_controller(string $controller) : ?Controller{
-    $path = CONTROLLER_PATH.strtolower($controller).".hh";
-    $namespace = File::path_to_namespace(CONTROLLER_PATH);
+    $path = Application::get_instance()->get_file_from_application(self::CONTROLLER_PATH.strtolower($controller).".hh");
 
-    $controller = $namespace.$controller;
+    if($path === null){
+      throw new FileNotFoundException("Controller file '".$controller."' not found in application.");
+    }
+
+    $namespace = Autoloader::get_namespace_filepath($path);
+
+    $controller = $namespace."\\".$controller;
 
     include_once $path;
 
-    //@todo namespace
-    if(class_exists($controller, false)){
+
+    if(class_exists($controller, true)){
 
       $reflector = new \ReflectionClass($controller);
 
@@ -93,7 +116,7 @@ class Loader{
       if($obj instanceof Command){
         return $obj;
       }
-      die('here');
+
     }
 
     return null;
@@ -111,16 +134,17 @@ class Loader{
   public function get_view_file(string $file, ?string $theme = null) : string{
 
     if($theme != null){
-      $path = THEME_PATH.$theme.DS."view".DS.$file.".hh";
-      if(file_exists($path)){
+      $path = Application::get_instance()->get_file_from_application(self::THEME_PATH.self::VIEW_PATH.$file.".hh");
+
+      if($path !== null){
         return $path;
       }
     }
 
-    $path = VIEW_PATH.$file.".hh";
+    $path = Application::get_instance()->get_file_from_application(self::VIEW_PATH.$file.".hh");
 
-    if(!file_exists($path)){
-      $path = CORE_VIEW_PATH.$file.".hh";
+    if($path == null){
+      $path = self::CORE_VIEW_PATH.$file.".hh";
     }
 
     return $path;

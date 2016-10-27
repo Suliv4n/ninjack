@@ -69,25 +69,31 @@ class Configuration{
    * @return mixed the requested variable value or the default value if
    * the value was not found.
    */
-  public function get(string $variable) : mixed{
-    return $this->variables[$variable];
+  public function get(string $variable, mixed $default = null) : mixed{
+    if(isset($this->variables[$variable])){
+      return $this->variables[$variable];
+    }
+
+    return $default;
   }
 
+
   /**
-   * Returns a string representation of the value given by name.
+   * Return string representation of the configuration variable by name.
    *
    * @param string $variable name of the variable.
    * @param ?string the default value.
    *
-   * @return mixed the requested variable value or the default value if
+   * @return ?string the requested variable value or the default value if
    * the value was not found.
    */
   public function get_string(string $variable, ?string $default = null) : ?string{
-    if($this->variables[$variable] == null){
-      return $default;
+    if(isset($this->variables[$variable])){
+      return strval($this->variables[$variable]);
     }
 
-    return strval($this->variables[$variable]);
+    return $default;
   }
+
 
 }

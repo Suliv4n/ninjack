@@ -4,6 +4,7 @@ namespace Ninjack\Core;
 use Ninjack\Core\Response as Response;
 use Ninjack\Core\Session as Session;
 use Ninjack\Core\Loader as Loader;
+use Ninjack\Core\Autoloader as Autoloader;
 use Ninjack\Core\Configuration as Configuration;
 use Ninjack\Core\Database\DBConnector as DBConnector;
 use Ninjack\Core\Exception\NoActionException as NoActionException;
@@ -19,35 +20,38 @@ use Ninjack\Core\Exception\CLIException as CLIException;
 class Application{
 
   /**
-    * The client request handle.
-    */
+  * The client request handle.
+  */
   private Request $request;
 
   /**
-    * The application router.
-    */
+  * The application router.
+  */
   private Router $router;
 
   /**
-    * The application loader.
-    */
+  * The application loader.
+  */
   private Loader $loader;
 
   /**
-    * The unique Application instance.
-    */
+  * The unique Application instance.
+  */
   private static ?Application $instance;
 
   /**
-   * The current session.
-   */
-   private Session $session;
+  * The current session.
+  */
+  private Session $session;
 
-   private Configuration $configuration;
+  private Configuration $configuration;
 
-   private Vector<string> $cli_arguments;
+  private Vector<string> $cli_arguments;
 
-   private Map<string,string> $parents = Map{};
+  private Map<string,string> $parents = Map{};
+
+  private bool $is_running = false;
+  private bool $is_initialized = false;
 
   /**
     * The application constructor.
@@ -59,9 +63,33 @@ class Application{
 
     $this->session = Session::get_instance();
 
-    $this->configuration = Configuration::load(ROOT.CONF_PATH."application.hh");
+    $this->configuration = Configuration::load(ROOT.Loader::CONFIGURATION_PATH."application.hh");
 
     $this->cli_arguments = Vector{};
+
+  }
+
+  private function initialize() : void {
+    $space = $this->configuration->get_string("space", "");
+
+    $application_name = "";
+    $package_path = ROOT;
+
+    foreach (explode(".", $space) as $package) {
+      if(!empty($space)){
+        $application_name = ".".$space;
+        if(basename($package_path) != $space){
+          die("error");
+        }
+        $package_path = dirname($package_path);
+      }
+    }
+
+
+    $application_name = basename($package_path).$application_name;
+
+    Autoloader::add_scope("Application\\".implode("\\", array_map(($package) ==> { return ucfirst($package); }, explode(".", $application_name))), ROOT);
+    
 
     $extends = $this->configuration->get("extends");
 
@@ -69,10 +97,16 @@ class Application{
       foreach ($extends as $application) {
         $path_parts = explode(DS, $application);
         $name = array_pop($path_parts);
-        $this->parents[$name] = implode(DS, $path_parts).DS.str_replace(".", DS, $name);
+        $parent_path = implode(DS, $path_parts).DS.str_replace(".", DS, $name);
+        $this->parents[$name] = $parent_path;
+        $namespace = implode("\\", array_map(($name) ==> ucfirst($name),explode(".",$name)));
+        Autoloader::add_scope("Application\\".$namespace, $parent_path);
       }
     }
 
+
+
+    $this->is_initialized = true;
   }
 
   /**
@@ -85,7 +119,13 @@ class Application{
     * @see Ninjack\Core\NoActionException
     */
   public function run() : void{
+
     //@todo no run more than one time
+
+    if(!$this->is_initialized){
+      $this->initialize();
+    }
+
     $uri = $this->request->get_uri();
     $action = $this->router->route($uri);
 
