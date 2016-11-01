@@ -1,6 +1,7 @@
 <?hh
 namespace Ninjack\Core;
 use Ninjack\Core\Application as Application;
+use Ninjack\Core\Loader as Loader;
 
 /**
  * Class that represents view.
@@ -85,23 +86,62 @@ class View{
     return $content;
   }
 
+  /* obsolete ? */
   public function asset(string $path, ?string $theme = null) : string{
 
     $url = Application::get_instance()->get_request()->get_base_url();
 
-    if(strlen($path) > 0 && $path[0] != "/"){
-      $path = "/".$path;
+    if(strlen($path) > 0 && $path[0] == DIRECTORY_SEPARATOR){
+      $path = substr($path, 1);
+    }
+    $path = Loader::ASSETS_PATH.$path;
+
+    $path = $this->get_asset_absolute_path($path, $theme);
+
+    if($path !== null){
+      $this->generate_asset($path);
     }
 
+    return $url."/assets/".$path;
+  }
+
+  private function get_asset_absolute_path(string $path, ?string $theme = null) : ?string{
     if($this->theme != null || $theme != null){
-      $asset_path = THEME_PATH.($theme ?? $this->theme).DS."assets".$path;
-      if(file_exists($asset_path)){
-        return $url."/theme/".($theme ?? $this->theme)."/assets".$path;
-      }
+      $asset_path = Application::get_instance()->get_file_from_application(
+        Loader::THEME_PATH.($theme ?? $this->theme).DIRECTORY_SEPARATOR.$path
+      );
 
+      if(file_exists($asset_path)){
+        return $asset_path;
+      }
     }
 
-    return $url."/assets".$path;
+
+    $asset_path = Application::get_instance()->get_file_from_application($path);
+
+    return $asset_path;
+
+  }
+
+  private function generate_asset(string $filepath) : bool{
+    if(!file_exists($filepath) || !is_file($filepath)){
+      return false;
+    }
+
+    $relative_path = substr($filepath, strlen(Application::get_instance()->get_application_path().DIRECTORY_SEPARATOR));
+    $relative_path = preg_replace("/^".preg_quote(Loader::ASSETS_PATH, "/")."/", "", $relative_path, 1);
+
+    $public_assets_path = Application::get_instance()->get_public_path().DIRECTORY_SEPARATOR."generate".DIRECTORY_SEPARATOR.$relative_path;
+
+
+    if(!file_exists(dirname($public_assets_path))){
+      if(!mkdir(dirname($public_assets_path), 0755, true)){
+        return false;
+      }
+    }
+
+
+    return copy($filepath, $public_assets_path);
   }
 
   /**

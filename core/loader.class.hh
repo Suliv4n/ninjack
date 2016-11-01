@@ -17,11 +17,12 @@ use Ninjack\Core\Exception\FileNotFoundException as FileNotFoundException;
  */
 class Loader{
 
-  const string CONFIGURATION_PATH = "conf".DS;
-  const string THEME_PATH = "theme".DS;
-  const string VIEW_PATH = "view".DS;
-  const string CORE_VIEW_PATH = CORE_PATH."view".DS;
-  const string CONTROLLER_PATH = "controller".DS;
+  const string CONFIGURATION_PATH = "conf".DIRECTORY_SEPARATOR;
+  const string THEME_PATH = "theme".DIRECTORY_SEPARATOR;
+  const string VIEW_PATH = "view".DIRECTORY_SEPARATOR;
+  const string ASSETS_PATH = "assets".DIRECTORY_SEPARATOR;
+  const string CORE_VIEW_PATH = CORE_PATH."view".DIRECTORY_SEPARATOR;
+  const string CONTROLLER_PATH = "controller".DIRECTORY_SEPARATOR;
 
   private bool $widgets_loaded = false;
 
@@ -223,7 +224,7 @@ class Loader{
   /**
    * Return the unique instance of Loader.
    *
-   * @return Ninjack\Core\Loader the unique instance of Loader.
+   * @return Ninjack\Core\Loader the uniq instance of Loader.
    */
   public static function get_instance() : Loader{
     if(self::$instance == null){

@@ -9,6 +9,7 @@ use Ninjack\Core\Configuration as Configuration;
 use Ninjack\Core\Database\DBConnector as DBConnector;
 use Ninjack\Core\Exception\NoActionException as NoActionException;
 use Ninjack\Core\Exception\CLIException as CLIException;
+use Ninjack\Core\Server as Server;
 
 /**
  * The Ninjack Application singleton class. It handles the client request,
@@ -53,6 +54,8 @@ class Application{
   private bool $is_running = false;
   private bool $is_initialized = false;
 
+  private Server $server;
+
   /**
     * The application constructor.
     */
@@ -66,6 +69,8 @@ class Application{
     $this->configuration = Configuration::load(ROOT.Loader::CONFIGURATION_PATH."application.hh");
 
     $this->cli_arguments = Vector{};
+
+    $this->server = new Server();
 
   }
 
@@ -89,7 +94,7 @@ class Application{
     $application_name = basename($package_path).$application_name;
 
     Autoloader::add_scope("Application\\".implode("\\", array_map(($package) ==> { return ucfirst($package); }, explode(".", $application_name))), ROOT);
-    
+
 
     $extends = $this->configuration->get("extends");
 
@@ -369,6 +374,14 @@ class Application{
      }
 
      return null;
+   }
+
+   public function get_public_path() : string{
+     return $this->server->get_root_path();
+   }
+
+   public function get_application_path() : string{
+     return dirname($this->get_public_path());
    }
 
 }
