@@ -2,6 +2,7 @@
 namespace Ninjack\Core;
 use Ninjack\Core\Application as Application;
 use Ninjack\Core\Loader as Loader;
+use Ninjack\Core\Helper\File as File;
 
 /**
  * Class that represents view.
@@ -87,7 +88,7 @@ class View{
   }
 
   /* obsolete ? */
-  public function asset(string $path, ?string $theme = null) : string{
+  public function asset(string $path, ?string $theme = null) : \XHPChild{
 
     $url = Application::get_instance()->get_request()->get_base_url();
 
@@ -102,7 +103,22 @@ class View{
       $this->generate_asset($path);
     }
 
-    return $url."/assets/".$path;
+    $extension = pathinfo($path, PATHINFO_EXTENSION);
+    $uri = preg_replace("/^".preg_quote(Application::get_instance()->get_application_path(), "/")."/", "", preg_replace("-".DIRECTORY_SEPARATOR."-", "/", $path));
+    $url = $url.$uri;
+
+    switch($extension){
+      case "js":
+        $xhp = <script type="" src={$url} type="text/javascript"></script>;
+        break;
+      case "css":
+      case "less":
+      default:
+        $url = File::change_extension($url, "css");
+        $xhp = <link type="text/css" href={$url} media="screen" rel="stylesheet"></link>;
+    }
+
+    return $xhp;
   }
 
   private function get_asset_absolute_path(string $path, ?string $theme = null) : ?string{
@@ -140,8 +156,18 @@ class View{
       }
     }
 
+    $status = false;
+    if(pathinfo($filepath, PATHINFO_EXTENSION) == "less"){
+      $less = new \lessc();
+      $content = $less->compileFile($filepath);
+      $public_assets_path = File::change_extension($public_assets_path, "css");
+      $status = file_put_contents($public_assets_path, $content) !== false;
+    }
+    else{
+      $status = copy($filepath, $public_assets_path);
+    }
 
-    return copy($filepath, $public_assets_path);
+    return $status;
   }
 
   /**

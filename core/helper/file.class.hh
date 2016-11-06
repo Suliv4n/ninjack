@@ -84,4 +84,15 @@ class File{
     return strlen($path) > 0 && $path[0] == "/";
   }
 
+  public static function change_extension(string $filename, string $extension) : string{
+    if(strlen($extension) > 0 && $extension[0] != "."){
+      $extension = ".".$extension;
+    }
+
+    $current_extension = ".".pathinfo($filename, PATHINFO_EXTENSION);
+
+    return dirname($filename).DIRECTORY_SEPARATOR.basename($filename, $current_extension).$extension;
+
+  }
+
 }
