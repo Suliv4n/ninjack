@@ -3,6 +3,7 @@ namespace Ninjack\Core;
 use Ninjack\Core\Application as Application;
 use Ninjack\Core\Loader as Loader;
 use Ninjack\Core\Helper\File as File;
+use Ninjack\Core\Display\AssetsCompiler as AssetsCompiler;
 
 /**
  * Class that represents view.
@@ -21,6 +22,8 @@ class View{
    */
   private Map<string, mixed> $variables;
 
+  private Map<string, AssetsCompiler> $assets_compilers = Map{};
+
   private ?string $theme = null;
 
   /**
@@ -32,6 +35,17 @@ class View{
     $this->name = $name;
     $this->variables = new Map(null);
     $this->theme = $theme;
+
+    $configuration = Application::get_instance()->loader()->load_configuration("view.hh");
+    $compilers = $configuration->get("assets_compilers");
+
+    if($compilers instanceof Map){
+      $this->assets_compilers = $compilers;
+      foreach($this->assets_compilers as $compiler){
+	$compiler->initialize();
+      }
+    }
+
   }
 
   /**
@@ -87,7 +101,7 @@ class View{
     return $content;
   }
 
-  /* obsolete ? */
+
   public function asset(string $path, ?string $theme = null) : \XHPChild{
 
     $url = Application::get_instance()->get_request()->get_base_url();
@@ -157,6 +171,9 @@ class View{
     }
 
     $status = false;
+    $extension = pathinfo($filepath, PATHINFO_EXTENSION);
+
+    /*
     if(pathinfo($filepath, PATHINFO_EXTENSION) == "less"){
       $less = new \lessc();
       $content = $less->compileFile($filepath);
@@ -166,6 +183,16 @@ class View{
     else{
       $status = copy($filepath, $public_assets_path);
     }
+    */
+
+    if($this->assets_compilers->containsKey($extension)){
+      $content = $this->assets_compilers[$extension]->compile($filepath);
+      $public_assets_path = File::change_extension($public_assets_path, $this->assets_compilers[$extension]->get_target_extension());
+    }
+    else{
+      $content = file_get_contents($filepath);
+    }
+    $status = file_put_contents($public_assets_path, $content) !== false;
 
     return $status;
   }

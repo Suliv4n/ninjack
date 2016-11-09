@@ -78,7 +78,7 @@ class Application{
     $space = $this->configuration->get_string("space", "");
 
     $application_name = "";
-    $package_path = ROOT;
+    $package_path = $this->get_application_path();
 
     foreach (explode(".", $space) as $package) {
       if(!empty($space)){
@@ -382,6 +382,18 @@ class Application{
 
    public function get_application_path() : string{
      return dirname($this->get_public_path());
+   }
+
+   public function get_assets_directories() : Vector<string>{
+      $directories = Vector{};
+
+      $directories[] = $this->get_application_path().DIRECTORY_SEPARATOR.Loader::ASSETS_PATH;
+
+      foreach ($this->parents as $parent) {
+        $directories[] = $parent.DIRECTORY_SEPARATOR.Loader::ASSETS_PATH;
+      }
+
+      return $directories;
    }
 
 }

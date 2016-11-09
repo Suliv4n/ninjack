@@ -47,7 +47,7 @@ class Loader{
   public function load_configuration(string $file) : Configuration{
 
     $filepath = Application::get_instance()->get_file_from_application(self::CONFIGURATION_PATH.$file);
-
+    
     if($filepath === null){
       throw new FileNotFoundException("Configuration file ". $file ." was not found.");
     }
