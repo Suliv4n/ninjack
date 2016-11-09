@@ -396,4 +396,29 @@ class Application{
       return $directories;
    }
 
+   public function get_applications_directories() : Vector<string>{
+     $directories = Vector{};
+
+     $directories->add($this->get_application_path());
+     $directories->addAll($this->parents);
+
+     return $directories;
+   }
+
+   public function get_relative_path(string $filename) : ?string{
+
+     foreach ($this->get_applications_directories() as $dir) {
+       $regex = "/^".preg_quote($dir, "/")."/";
+       if(preg_match($regex, $filename)){
+         $relative_path = preg_replace($regex, "", $filename);
+
+         if(strlen($relative_path) && $relative_path[0] == DIRECTORY_SEPARATOR){
+           $relative_path = substr($relative_path, 1);
+         }
+         return $relative_path;
+       }
+     }
+     return null;
+   }
+
 }

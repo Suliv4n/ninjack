@@ -114,25 +114,31 @@ class View{
     $path = $this->get_asset_absolute_path($path, $theme);
 
     if($path !== null){
-      $this->generate_asset($path);
+      $public_path = $this->generate_asset($path);
+
+      if($public_path == null){
+        return "";
+      }
+
+      $relative_path = Application::get_instance()->get_relative_path($path);
+      $uri = preg_replace("-".DIRECTORY_SEPARATOR."-", "/", $relative_path);
+      $url = $url."/".$uri;
+
+      $extension = pathinfo($public_path, PATHINFO_EXTENSION);
+      switch($extension){
+        case "js":
+          $xhp = <script type="" src={$url} type="text/javascript"></script>;
+          break;
+        case "css":
+        default:
+          $url = File::change_extension($url, "css");
+          $xhp = <link type="text/css" href={$url} media="screen" rel="stylesheet"></link>;
+      }
+
+      return $xhp;
     }
 
-    $extension = pathinfo($path, PATHINFO_EXTENSION);
-    $uri = preg_replace("/^".preg_quote(Application::get_instance()->get_application_path(), "/")."/", "", preg_replace("-".DIRECTORY_SEPARATOR."-", "/", $path));
-    $url = $url.$uri;
-
-    switch($extension){
-      case "js":
-        $xhp = <script type="" src={$url} type="text/javascript"></script>;
-        break;
-      case "css":
-      case "less":
-      default:
-        $url = File::change_extension($url, "css");
-        $xhp = <link type="text/css" href={$url} media="screen" rel="stylesheet"></link>;
-    }
-
-    return $xhp;
+    return "";
   }
 
   private function get_asset_absolute_path(string $path, ?string $theme = null) : ?string{
@@ -153,37 +159,28 @@ class View{
 
   }
 
-  private function generate_asset(string $filepath) : bool{
+  private function generate_asset(string $filepath) : ?string{
     if(!file_exists($filepath) || !is_file($filepath)){
-      return false;
+      return null;
     }
 
+    /*
     $relative_path = substr($filepath, strlen(Application::get_instance()->get_application_path().DIRECTORY_SEPARATOR));
     $relative_path = preg_replace("/^".preg_quote(Loader::ASSETS_PATH, "/")."/", "", $relative_path, 1);
-
+    */
+    $relative_path = Application::get_instance()->get_relative_path($filepath);
+    $relative_path = preg_replace("/^".preg_quote(Loader::ASSETS_PATH, "/")."/", "", $relative_path);
     $public_assets_path = Application::get_instance()->get_public_path().DIRECTORY_SEPARATOR."generate".DIRECTORY_SEPARATOR.$relative_path;
-
 
     if(!file_exists(dirname($public_assets_path))){
       if(!mkdir(dirname($public_assets_path), 0755, true)){
-        return false;
+        return null;
       }
     }
 
     $status = false;
     $extension = pathinfo($filepath, PATHINFO_EXTENSION);
 
-    /*
-    if(pathinfo($filepath, PATHINFO_EXTENSION) == "less"){
-      $less = new \lessc();
-      $content = $less->compileFile($filepath);
-      $public_assets_path = File::change_extension($public_assets_path, "css");
-      $status = file_put_contents($public_assets_path, $content) !== false;
-    }
-    else{
-      $status = copy($filepath, $public_assets_path);
-    }
-    */
 
     if($this->assets_compilers->containsKey($extension)){
       $content = $this->assets_compilers[$extension]->compile($filepath);
@@ -194,7 +191,7 @@ class View{
     }
     $status = file_put_contents($public_assets_path, $content) !== false;
 
-    return $status;
+    return !$status ? null : $public_assets_path;
   }
 
   /**
