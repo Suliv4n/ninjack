@@ -23,6 +23,7 @@ class Loader{
   const string ASSETS_PATH = "assets".DIRECTORY_SEPARATOR;
   const string CORE_VIEW_PATH = CORE_PATH."view".DIRECTORY_SEPARATOR;
   const string CONTROLLER_PATH = "controller".DIRECTORY_SEPARATOR;
+  const string XHP_PATH = "xhp".DIRECTORY_SEPARATOR;
 
   private bool $widgets_loaded = false;
 
@@ -47,7 +48,7 @@ class Loader{
   public function load_configuration(string $file) : Configuration{
 
     $filepath = Application::get_instance()->get_file_from_application(self::CONFIGURATION_PATH.$file);
-    
+
     if($filepath === null){
       throw new FileNotFoundException("Configuration file ". $file ." was not found.");
     }
@@ -167,8 +168,10 @@ class Loader{
    * Widgets are xhp elements so no namespace supported.
    */
   public function load_all_widgets() : void{
-    if(!$this->widgets_loaded){
-      $this->load_widgets_dir(WIDGET_PATH);
+    foreach (Application::get_instance()->get_applications_directories() as $dir) {
+      if(!$this->widgets_loaded){
+        $this->load_widgets_dir(Loader::XHP_PATH);
+      }
     }
   }
 

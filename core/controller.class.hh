@@ -71,7 +71,7 @@ class Controller{
       $theme = $this->theme ?? $this->application->get_configuration()->get_string("default_theme");
 
 
-      $this->view = new View($controller."/".$action,
+      $this->view = new View($controller."/".$action."/default",
         $theme
       );
 

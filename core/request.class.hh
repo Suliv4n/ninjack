@@ -25,10 +25,6 @@ class Request{
     return $_SERVER["REQUEST_URI"];
   }
 
-  public function get_base_url() : string{
-    return $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['SERVER_NAME'];
-  }
-
   /**
    * Returns the post data given by name or the default value.
    *

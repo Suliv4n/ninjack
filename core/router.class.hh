@@ -59,7 +59,6 @@ class Router {
             $this->action_components =  $this->get_action_components($action);
             $controller = Application::get_instance()->loader()->load_controller((string) $this->action_components["controller"]);
             //call_user_method_array((string) $this->action_components["action"], $controller , (array) $this->action_components["parameters"]);
-
             return $action;
           }
       }
@@ -90,7 +89,6 @@ class Router {
     $components["action"] = $args[0];
 
     $components["parameters"] = implode("/",array_slice($args, 1));
-
 
     return $components;
   }

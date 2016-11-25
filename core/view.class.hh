@@ -104,7 +104,7 @@ class View{
 
   public function asset(string $path, ?string $theme = null) : \XHPChild{
 
-    $url = Application::get_instance()->get_request()->get_base_url();
+    $url = Application::get_instance()->server()->get_root_url();
 
     if(strlen($path) > 0 && $path[0] == DIRECTORY_SEPARATOR){
       $path = substr($path, 1);

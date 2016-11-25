@@ -309,6 +309,16 @@ class Application{
     return $this->session;
    }
 
+
+   /**
+    * Returns the current server.
+    *
+    * @return the current server.
+    */
+    public function server() : Server{
+     return $this->server;
+    }
+
    /**
     * Returns true if the application is ran via cli.
     *
@@ -420,5 +430,6 @@ class Application{
      }
      return null;
    }
+
 
 }
