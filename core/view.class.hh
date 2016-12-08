@@ -4,6 +4,7 @@ use Ninjack\Core\Application as Application;
 use Ninjack\Core\Loader as Loader;
 use Ninjack\Core\Helper\File as File;
 use Ninjack\Core\Display\AssetsCompiler as AssetsCompiler;
+use Ninjack\Core\Display\Media as Media;
 
 /**
  * Class that represents view.
@@ -26,6 +27,8 @@ class View{
 
   private ?string $theme = null;
 
+  private Map<string, Media> $media = Map{};
+
   /**
    * The constructor.
    *
@@ -38,12 +41,17 @@ class View{
 
     $configuration = Application::get_instance()->loader()->load_configuration("view.hh");
     $compilers = $configuration->get("assets_compilers");
+    $media = $configuration->get("media");
 
     if($compilers instanceof Map){
       $this->assets_compilers = $compilers;
       foreach($this->assets_compilers as $compiler){
-	$compiler->initialize();
+	        $compiler->initialize();
       }
+    }
+
+    if($media instanceof Map){
+      $this->media = $media;
     }
 
   }
@@ -160,14 +168,10 @@ class View{
   }
 
   private function generate_asset(string $filepath) : ?string{
-    if(!file_exists($filepath) || !is_file($filepath)){
-      return null;
-    }
+    $extension = pathinfo($filepath, PATHINFO_EXTENSION);
 
-    /*
-    $relative_path = substr($filepath, strlen(Application::get_instance()->get_application_path().DIRECTORY_SEPARATOR));
-    $relative_path = preg_replace("/^".preg_quote(Loader::ASSETS_PATH, "/")."/", "", $relative_path, 1);
-    */
+    $content = $this->get_asset_content($filepath);
+
     $relative_path = Application::get_instance()->get_relative_path($filepath);
     $relative_path = preg_replace("/^".preg_quote(Loader::ASSETS_PATH, "/")."/", "", $relative_path);
     $public_assets_path = Application::get_instance()->get_public_path().DIRECTORY_SEPARATOR."generate".DIRECTORY_SEPARATOR.$relative_path;
@@ -178,21 +182,51 @@ class View{
       }
     }
 
-    $status = false;
-    $extension = pathinfo($filepath, PATHINFO_EXTENSION);
-
-
     if($this->assets_compilers->containsKey($extension)){
-      $content = $this->assets_compilers[$extension]->compile($filepath);
       $public_assets_path = File::change_extension($public_assets_path, $this->assets_compilers[$extension]->get_target_extension());
     }
-    else{
-      $content = file_get_contents($filepath);
+
+    if($extension == "css" || ($this->assets_compilers->containsKey($extension) && $this->assets_compilers[$extension]->get_target_extension() == "css")){
+      if(!empty($this->media)){
+        foreach($this->media as $name => $media){
+          $media_content = $this->get_asset_content(File::change_extension($filepath, $name.".".$extension));
+          if($media_content != null){
+            $content = $content.$media->wrap($media_content);
+          }
+        }
+      }
     }
+
     $status = file_put_contents($public_assets_path, $content) !== false;
 
     return !$status ? null : $public_assets_path;
   }
+
+  public function get_asset_content(string $filepath) : ?string{
+    $extension = pathinfo($filepath, PATHINFO_EXTENSION);
+
+    if(!file_exists($filepath) || !is_file($filepath)){
+      return null;
+    }
+
+    /*
+    $relative_path = substr($filepath, strlen(Application::get_instance()->get_application_path().DIRECTORY_SEPARATOR));
+    $relative_path = preg_replace("/^".preg_quote(Loader::ASSETS_PATH, "/")."/", "", $relative_path, 1);
+    */
+
+
+
+    if($this->assets_compilers->containsKey($extension)){
+      $content = $this->assets_compilers[$extension]->compile($filepath);
+    }
+    else{
+      $content = file_get_contents($filepath);
+    }
+
+
+    return $content;
+  }
+
 
   /**
    * Prints the render.
