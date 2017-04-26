@@ -32,8 +32,12 @@ class LessCompiler implements AssetsCompiler{
     $assets_directories = array_map(($dir) ==> { return $dir.$relative_path; }, $assets_directories);
 
     $this->less->setImportDir($assets_directories);
-    //var_dump($assets_directories);die();
-    return $this->less->compileFile($filename);
+
+    $compiledCss = $this->less->compileFile($filename);
+
+    $this->less = $this->less = new \lessc();
+
+    return $compiledCss;
   }
 
   public function get_target_extension() : string{
