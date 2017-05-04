@@ -92,7 +92,6 @@ class Application{
 
 
     $application_name = basename($package_path).$application_name;
-
     Autoloader::add_scope("Application\\".implode("\\", array_map(($package) ==> { return ucfirst($package); }, explode(".", $application_name))), ROOT);
 
 
@@ -162,6 +161,11 @@ class Application{
    * Run the application from the cli.
    */
   public function run_command() : void{
+
+    if(!$this->is_initialized){
+      $this->initialize();
+    }
+
     if(!$this->is_cli()){
       throw new CLIException("Command can be run only on CLI");
     }
@@ -387,11 +391,17 @@ class Application{
    }
 
    public function get_public_path() : string{
-     return $this->server->get_root_path();
+       return $this->server->get_root_path();
    }
 
    public function get_application_path() : string{
-     return dirname($this->get_public_path());
+     if(!$this->is_cli()){
+       return dirname($this->get_public_path());
+     }
+     else{
+       //assume we passed by the ninja script to get here
+       return dirname($this->get_file_from_application("/ninja"));
+     }
    }
 
    public function get_assets_directories() : Vector<string>{

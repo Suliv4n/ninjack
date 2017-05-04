@@ -5,7 +5,9 @@ define("NINJACK_PATH", "/var/www/ninjack".DS);
 define("CORE_PATH", NINJACK_PATH."core".DS);
 
 
-define("APPLICATION_PATH", ROOT."application".DS);
+//@todo faudrait faire un truc ici pour savoir quel path utilisé pour l'application
+//define("APPLICATION_PATH", ROOT."application".DS);
+define("APPLICATION_PATH", ROOT.DS);
 define("WIDGET_PATH", APPLICATION_PATH."widget".DS);
 
 define("CONTROLLER_PATH", APPLICATION_PATH."controller".DS);
@@ -19,4 +21,7 @@ require_once CORE_PATH."autoloader.class.hh";
 Ninjack\Core\AutoLoader::register();
 
 //composer autoload
-require __DIR__ . '/vendor/autoload.php';
+$vendor_autoload_path = __DIR__ . '/vendor/autoload.php';
+if(file_exists($vendor_autoload_path)){
+    require $vendor_autoload_path;
+}

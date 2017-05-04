@@ -34,22 +34,25 @@ class Autoloader{
     }
 
     $scopes = self::$scopes->toArray();
-    usort($scopes, ($a, $b) ==> {return strlen($a) < strlen($b);});
+    uasort($scopes, ($a, $b) ==> {return strlen($a) < strlen($b);});
 
     $namespace = "";
-    foreach (self::$scopes as $ns => $path) {
+    foreach ($scopes as $ns => $path) {
+      //var_dump($path, $filepath, preg_match("/^".preg_quote($path, "/")."/", $filepath));
       if(preg_match("/^".preg_quote($path, "/")."/", $filepath)){
         $namespace = $ns;
         $filepath = preg_replace("/^".preg_quote($path, "/")."/", "", $filepath);
+        break;
       }
     }
-
 
     foreach (explode(DIRECTORY_SEPARATOR, $filepath) as $part) {
       if(strlen($part) > 0){
         $namespace .= "\\".ucfirst($part);
       }
     }
+
+
 
     return $namespace;
 

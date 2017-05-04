@@ -24,6 +24,7 @@ class Loader{
   const string CORE_VIEW_PATH = CORE_PATH."view".DIRECTORY_SEPARATOR;
   const string CONTROLLER_PATH = "controller".DIRECTORY_SEPARATOR;
   const string XHP_PATH = "xhp".DIRECTORY_SEPARATOR;
+  const string COMMAND_PATH = "command".DIRECTORY_SEPARATOR;
 
   private bool $widgets_loaded = false;
 
@@ -103,10 +104,12 @@ class Loader{
    * if the command is not found.
    */
   public function load_command(string $command) : ?Command{
-    $path = COMMAND_PATH.strtolower($command).".hh";
-
+    $path = Application::get_instance()->get_file_from_application(self::COMMAND_PATH.strtolower($command).".hh");
 
     include_once $path;
+
+    $namespace = Autoloader::get_namespace_filepath($path);
+    $command = $namespace."\\".$command;
 
     //@todo namespace
     if(class_exists($command, false)){
