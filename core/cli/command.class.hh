@@ -35,6 +35,7 @@ abstract class Command{
 
     $exists = method_exists($this, $command);
     $is_command = false;
+    
     if($exists){
       $method = new \ReflectionMethod($this, $command);
       $is_command = isset($method->getAttributes()["Command"]);

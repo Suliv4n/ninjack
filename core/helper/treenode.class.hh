@@ -16,7 +16,7 @@ class TreeNode<T>{
     $this->parent = $parent;
   }
 
-  public function get_value() : T {
+  public function get_value() : ?T {
     return $this->value;
   }
 
@@ -31,7 +31,7 @@ class TreeNode<T>{
     do{
       $current_node = $current_node->parent;
       $level++;
-    }while($current_node->parent !== null);
+    }while($current_node != null && $current_node->parent !== null);
 
     return $level;
   }
@@ -51,7 +51,7 @@ class TreeNode<T>{
     }
   }
 
-  public function is_leaf() : boolean{
+  public function is_leaf() : bool{
     return $this->children->count() === 0;
   }
 

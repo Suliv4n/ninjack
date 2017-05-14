@@ -10,6 +10,9 @@ class Project extends Command{
   private TreeNode<string> $project_arborescence;
 
   public function __construct(){
+
+    parent::__construct();
+
     $this->project_arborescence = new TreeNode<string>();
 
     $this->project_arborescence->add_child("assets");

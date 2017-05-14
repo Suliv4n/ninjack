@@ -100,7 +100,7 @@ class View{
     ob_start();
     $variables = $this->variables->toArray();
     if(!$this->variables->isEmpty()){
-      include ROOT."variables_loader.php";
+      include Application::get_instance()->get_application_path().DIRECTORY_SEPARATOR."variables_loader.php";
     }
     include $view_file;
     $content = ob_get_contents();

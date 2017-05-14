@@ -1,5 +1,7 @@
 <?hh
 namespace Ninjack\Core;
+use Ninjack\Core\Application as Application;
+
 
 /**
  * Loads configurations file and stores its variables.
@@ -16,7 +18,7 @@ class Configuration{
   /**
    * The stored variables from the configuation file.
    */
-  private Map<string, object> $variables;
+  private Map<string, mixed> $variables;
 
   /**
    * Constructor of COnfiguration.
@@ -52,10 +54,32 @@ class Configuration{
     return $this->file;
   }
 
+
+  /**
+   * Return the path of the configuration from parent applications.
+   *
+   * @return the path of the configuration from parent applications.
+   */
+  private function get_parent_file() : ?string{
+
+    $current_filepath = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]["file"];
+
+    $relative_path = Application::get_instance()->belong_to($current_filepath);
+
+    if($relative_path[0] === null){
+      return null;
+    }
+
+    $parent_configuration_path = Application::get_instance()->get_file_from_parent_applications(strval($relative_path[1]), $relative_path[0]);
+
+    return $parent_configuration_path;
+  }
+
   /**
    * Include the configuration file and store variables.
    */
-  private function include_file() : void{
+  private function include_file(?string $file = null) : void{
+    $file = $file === null ? $this->file : $file;
     require($this->file);
     $this->variables = get_defined_vars();
   }
@@ -94,6 +118,7 @@ class Configuration{
 
     return $default;
   }
+
 
 
 }

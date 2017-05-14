@@ -106,6 +106,10 @@ class Loader{
   public function load_command(string $command) : ?Command{
     $path = Application::get_instance()->get_file_from_application(self::COMMAND_PATH.strtolower($command).".hh");
 
+    if($path === null){
+      throw new NinjackExeption("Commande ".$command." could not be found.");
+    }
+
     include_once $path;
 
     $namespace = Autoloader::get_namespace_filepath($path);

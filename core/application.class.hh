@@ -10,6 +10,7 @@ use Ninjack\Core\Database\DBConnector as DBConnector;
 use Ninjack\Core\Exception\NoActionException as NoActionException;
 use Ninjack\Core\Exception\CLIException as CLIException;
 use Ninjack\Core\Server as Server;
+use Ninjack\Core\Helper\File as File;
 
 /**
  * The Ninjack Application singleton class. It handles the client request,
@@ -19,6 +20,11 @@ use Ninjack\Core\Server as Server;
  *
  */
 class Application{
+
+  /**
+   * The name of the application
+   */
+   private string $name = "";
 
   /**
   * The client request handle.
@@ -86,13 +92,20 @@ class Application{
         if(basename($package_path) != $space){
           die("error");
         }
-        $package_path = dirname($package_path);
+        $package_path = realpath(dirname($package_path));
       }
     }
 
 
+
     $application_name = basename($package_path).$application_name;
-    Autoloader::add_scope("Application\\".implode("\\", array_map(($package) ==> { return ucfirst($package); }, explode(".", $application_name))), ROOT);
+
+    $this->name = $application_name;
+
+    Autoloader::add_scope(
+      "Application\\".implode("\\", array_map(($package) ==> { return ucfirst($package); }, explode(".", $application_name))),
+      ROOT
+    );
 
 
     $extends = $this->configuration->get("extends");
@@ -102,7 +115,7 @@ class Application{
         $path_parts = explode(DS, $application);
         $name = array_pop($path_parts);
         $parent_path = implode(DS, $path_parts).DS.str_replace(".", DS, $name);
-        $this->parents[$name] = $parent_path;
+        $this->parents[$name] = realpath($parent_path);
         $namespace = implode("\\", array_map(($name) ==> ucfirst($name),explode(".",$name)));
         Autoloader::add_scope("Application\\".$namespace, $parent_path);
       }
@@ -362,32 +375,75 @@ class Application{
     * @return ?string the absolute filepath of the application or parent applications. Returns null
     * if the file not exists in the application or parent applications.
     */
-   public function get_file_from_application(string $file) : ?string{
-     if(strlen($file) > 0 && $file[0] == DS){
-       $file = substr($file, 1);
-     }
+   public function get_file_from_application(string $file) : ?string
+   {
 
      $filepath = ROOT.$file;
 
      if(file_exists($filepath)){
        return $filepath;
      }
-     else{
-       foreach($this->parents as $parent){
-          //@todo parents of parent.
-         $filepath = $parent;
-         if(strlen($filepath) > 0 && $filepath[strlen($filepath)-1] != DS){
-           $filepath .= DS;
-         }
-         $filepath .= $file;
 
-         if(file_exists($filepath)){
-           return $filepath;
-         }
+     return $this->get_file_from_parent_applications($file);
+   }
+
+   /**
+    * Returns the absolute file path of a parent application.
+    *
+    * @param string $file the file to search.
+    * @param string $from application name frow which to find the file
+    *
+    * @return ?string the absolute filepath of a parent application. Returns null
+    * if the file does not exist in any parent application.
+    */
+   public function get_file_from_parent_applications(string $file, ?string $from = null) : ?string{
+
+     if($from !== null && !$this->parents->containsKey($from) && $this->name !== $from){
+        return null;
+     }
+
+     $applications_from = $this->parents->keys();
+     if($from !== $this->name){
+       $applications_from = $applications_from->takeWhile( $value ==> $value !== $from);
+     }
+
+     foreach($applications_from as $name){
+
+       $filepath = $this->get_file_from_extended_application($file, $name);
+
+       if(file_exists($filepath)){
+         return $filepath;
        }
      }
 
      return null;
+
+
+   }
+
+   /**
+    * Returns the absolute file path of one of parents application given by its name.
+    *
+    * @param string $file the file to search.
+    * @param string $application_name the name of the application where the file is searched.
+    *
+    * @return ?string the absolute filepath of a parent application. Returns null
+    * if the file does not exist in any parent application.
+    */
+   protected function get_file_from_extended_application(string $file, string $application_name) : ?string{
+
+     if(!isset($this->parents[$application_name])){
+       return null;
+     }
+
+     $filepath = $this->parents[$application_name].DIRECTORY_SEPARATOR.$file;
+
+     if(file_exists($filepath)){
+       return $filepath;
+     }
+
+     return null;
+
    }
 
    public function get_public_path() : string{
@@ -441,5 +497,30 @@ class Application{
      return null;
    }
 
+   public function belong_to(string $filepath) : (?string, ?string){
+
+     $filepath = File::realpath($filepath);
+
+     if(preg_match("/^".preg_quote($this->get_application_path(), "/")."/", $filepath)){
+       return tuple(
+        $this->name,
+        preg_replace("/^".preg_quote($this->get_application_path().DIRECTORY_SEPARATOR, "/")."?/", "", $filepath)
+      );
+     }
+
+     $ordered_parents = $this->parents;
+     uasort($ordered_parents, ($a, $b) ==> {return count(explode($a, DIRECTORY_SEPARATOR)) < count(explode($b, DIRECTORY_SEPARATOR));});
+
+
+     foreach ($ordered_parents as $name => $application_path) {
+
+       if(preg_match("/^".preg_quote($application_path, "/")."./", $filepath)){
+         return tuple($name, preg_replace("/^".preg_quote($application_path.DIRECTORY_SEPARATOR, "/")."?/", "", $filepath,));
+       }
+
+     }
+
+     return tuple(null, null);
+   }
 
 }

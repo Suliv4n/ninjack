@@ -95,6 +95,20 @@ class File{
 
   }
 
-  }
+  public static function realpath(string $path) : string{
+    return array_reduce(explode(DIRECTORY_SEPARATOR, $path),
+    ($a, $b) ==> {
+			if($a === 0)
+				$a = "/";
+
+			if($b === "" || $b === ".")
+				return $a;
+
+			if($b === "..")
+				return dirname($a);
+
+			return preg_replace("/".preg_quote(DIRECTORY_SEPARATOR, "/")."+/", DIRECTORY_SEPARATOR, $a.DIRECTORY_SEPARATOR.$b);
+		}, 0);
+}
 
 }
