@@ -46,7 +46,8 @@ class Router {
    */
   public function route($uri) : ?string{
     $this->configuration = Application::get_instance()->loader()->load_configuration("route.hh");
-    $routes = $this->configuration->get("routes");
+
+    $routes = $this->configuration?->get("routes");
 
     if($routes instanceof Map && $routes != null){
       foreach ($routes as $regex => $action) {
@@ -66,6 +67,7 @@ class Router {
     else{
       //@todo throw exception
     }
+
     return null;
   }
 

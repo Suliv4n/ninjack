@@ -40,18 +40,23 @@ class View{
     $this->theme = $theme;
 
     $configuration = Application::get_instance()->loader()->load_configuration("view.hh");
-    $compilers = $configuration->get("assets_compilers");
-    $media = $configuration->get("media");
 
-    if($compilers instanceof Map){
-      $this->assets_compilers = $compilers;
-      foreach($this->assets_compilers as $compiler){
-	        $compiler->initialize();
+    if($configuration !== null){
+
+      $compilers = $configuration->get("assets_compilers");
+      $media = $configuration->get("media");
+
+      if($compilers instanceof Map){
+        $this->assets_compilers = $compilers;
+        foreach($this->assets_compilers as $compiler){
+  	        $compiler->initialize();
+        }
       }
-    }
 
-    if($media instanceof Map){
-      $this->media = $media;
+      if($media instanceof Map){
+        $this->media = $media;
+      }
+
     }
 
   }

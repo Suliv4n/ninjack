@@ -17,6 +17,7 @@ class Autoloader{
    */
   public static function register() : void{
     spl_autoload_register(array(__CLASS__, 'autoload'));
+
   }
 
   public static function add_scope(string $namespace, string $directory) : bool{

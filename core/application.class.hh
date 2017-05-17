@@ -11,6 +11,8 @@ use Ninjack\Core\Exception\NoActionException as NoActionException;
 use Ninjack\Core\Exception\CLIException as CLIException;
 use Ninjack\Core\Server as Server;
 use Ninjack\Core\Helper\File as File;
+use Ninjack\Core\Event\EventManager as EventManager;
+use Ninjack\Core\Event\EventListener as EventListener;
 
 /**
  * The Ninjack Application singleton class. It handles the client request,
@@ -40,6 +42,11 @@ class Application{
   * The application loader.
   */
   private Loader $loader;
+
+  /**
+   * Events Manager
+   */
+   private EventManager $event_manager;
 
   /**
   * The unique Application instance.
@@ -78,6 +85,8 @@ class Application{
 
     $this->server = new Server();
 
+    $this->event_manager = new EventManager();
+
   }
 
   private function initialize() : void {
@@ -95,7 +104,6 @@ class Application{
         $package_path = realpath(dirname($package_path));
       }
     }
-
 
 
     $application_name = basename($package_path).$application_name;
@@ -121,9 +129,28 @@ class Application{
       }
     }
 
-
+    $this->load_events();
 
     $this->is_initialized = true;
+
+    $this->event_manager->trigger("ninjack.core.application_initialized");
+  }
+
+  private function load_events() : void{
+    $configuration = $this->loader->load_configuration("events.hh");
+
+    $events = $configuration?->get("events");
+
+    if($events !== null && $events instanceof Map){
+      foreach ($events as $name => $callback) {
+        $this->event_manager->on($name, new EventListener($callback));
+      }
+    }
+
+  }
+
+  public function get_event_manager() : EventManager{
+    return $this->event_manager;
   }
 
   /**
@@ -296,20 +323,23 @@ class Application{
   public function load_database(string $name) : ?DBConnector{
     $configuration = $this->loader->load_configuration("databases.hh");
 
-    $databases = $configuration->get("databases");
+    if($configuration !== null){
 
-    if($databases instanceof Map){
-      $configuration->get("databases");
-      if(!empty($databases[$name]) && $databases[$name] instanceof Map){
-        return new DBConnector(
-          $databases[$name]["dbdriver"],
-          $databases[$name]["hostname"],
-          $databases[$name]["port"],
-          $databases[$name]["username"],
-          $databases[$name]["password"],
-          $databases[$name]["database"],
-          $databases[$name]["charset"],
-        );
+      $databases = $configuration->get("databases");
+
+      if($databases instanceof Map){
+        $configuration->get("databases");
+        if(!empty($databases[$name]) && $databases[$name] instanceof Map){
+          return new DBConnector(
+            $databases[$name]["dbdriver"],
+            $databases[$name]["hostname"],
+            $databases[$name]["port"],
+            $databases[$name]["username"],
+            $databases[$name]["password"],
+            $databases[$name]["database"],
+            $databases[$name]["charset"],
+          );
+        }
       }
     }
 
