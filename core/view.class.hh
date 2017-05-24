@@ -29,6 +29,8 @@ class View{
 
   private Map<string, Media> $media = Map{};
 
+  private ?Configuration $configuration;
+
   /**
    * The constructor.
    *
@@ -39,12 +41,12 @@ class View{
     $this->variables = new Map(null);
     $this->theme = $theme;
 
-    $configuration = Application::get_instance()->loader()->load_configuration("view.hh");
+    $this->configuration = Application::get_instance()->loader()->load_configuration("view.hh");
 
-    if($configuration !== null){
+    if($this->configuration !== null){
 
-      $compilers = $configuration->get("assets_compilers");
-      $media = $configuration->get("media");
+      $compilers = $this->configuration->get("assets_compilers");
+      $media = $this->configuration?->get("media");
 
       if($compilers instanceof Map){
         $this->assets_compilers = $compilers;
@@ -97,10 +99,22 @@ class View{
    *
    * @return string the render.
    */
+   <<__Memoize>>
   public function get_render() : string{
     $view_file = Application::get_instance()->loader()->get_view_file($this->name, $this->theme);
 
     Application::get_instance()->loader()->load_all_widgets();
+
+    $auto_assets_deploy = $this->configuration?->get("auto_assets_deploy");
+
+    if($auto_assets_deploy !== null && $auto_assets_deploy instanceof Vector){
+      foreach ($auto_assets_deploy as $asset) {
+        $asset_path = Application::get_instance()->get_file_from_application(Loader::ASSETS_PATH.$asset);
+        if($asset_path !== null){
+          $this->generate_asset($asset_path);
+        }
+      }
+    }
 
     ob_start();
     $variables = $this->variables->toArray();
@@ -173,6 +187,9 @@ class View{
   }
 
   private function generate_asset(string $filepath) : ?string{
+
+
+
     $extension = pathinfo($filepath, PATHINFO_EXTENSION);
 
     $content = $this->get_asset_content($filepath);
@@ -180,6 +197,22 @@ class View{
     $relative_path = Application::get_instance()->get_relative_path($filepath);
     $relative_path = preg_replace("/^".preg_quote(Loader::ASSETS_PATH, "/")."/", "", $relative_path);
     $public_assets_path = Application::get_instance()->get_public_path().DIRECTORY_SEPARATOR."generate".DIRECTORY_SEPARATOR.$relative_path;
+
+    //when the file path is a dir we generate all files in it
+    if(is_dir($filepath)){
+
+      $files = File::scandir($filepath);
+
+      if($files === null){
+        return null;
+      }
+
+      foreach ($files as $file) {
+        $this->generate_asset($file);
+      }
+
+      return $public_assets_path;
+    }
 
     if(!file_exists(dirname($public_assets_path))){
       if(!mkdir(dirname($public_assets_path), 0755, true)){
