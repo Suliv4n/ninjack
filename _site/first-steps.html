@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="css/main.css">
+		<link rel="stylesheet" href="highlight/styles/default.css">
+		<script type="text/javascript" src="highlight/highlight.pack.js"></script>
+		<script>
+			
+			hljs.initHighlightingOnLoad();
+		</script>
+		<title>Premiers pas</title>
+	</head>
+	<body>
+
+		<header>
+
+	<div class="header">
+		<a href="/">
+			<h1 class="header-title" >Ninjack</h1>
+		</a>
+	</div>
+
+</header>
+
+
+		<div class="columns">
+
+		<div class="column column--left">
+  <nav class="navigation">
+	<ul class="navigation-list">
+		
+			<li class="navigation-item">
+				<a href="/installation.html" class="navigation-link">
+					Installation
+				</a>
+			</li>
+		
+			<li class="navigation-item">
+				<a href="/first-steps.html" class="navigation-link">
+					Premiers Pas
+				</a>
+			</li>
+		
+	</ul>
+</nav>
+
+</div>
+
+
+			<div class="column column--right">
+
+				<div class="content">
+					<h1 class="content-title">Premiers pas</h1>
+					<div clas="Note Note--information">
+  Pour la suite, on assumera que ninjack est install&eacute; dans /var/www.
+</div>
+
+<h3>Une application Ninjack ça ressemble &agrave; quoi ?</h3>
+
+<p>
+  Une application Ninjack est un dossier dans lequel on retrouve cette arborescence :
+</p>
+<pre>
+  <code>
+  |_application/
+    |_asset/
+    |_command/
+    |_conf/
+    |_controller/
+    |_entity/
+    |_form/
+    |_public/
+    |   |_index.hh
+    |_view/
+    |_bootstrap.hh
+    |_ninja
+    |_variables_loader.php
+  </code>
+</pre>
+
+<p>
+  Le nom du dit dossier est le nom de l'application.
+  Mais pour l'instant on s'en fout.
+</p>
+
+<p>
+  Le dossier <strong>asset</strong> contient toutes les ressources pour les vues nottament, c'est à dire les fichiers css, js etc..
+</p>
+
+<p>
+  Le dossier <strong>command</strong> contient les commandes de l'application. On y viendra.
+</p>
+
+<p>
+  Le dossier <strong>controller</strong> contient les ... bah les controllers quoi.
+</p>
+
+<p>
+  Le dossier <strong>entity</strong> contient les classes Entity dont les instances pourront être générées via un orm nottament.
+</p>
+
+<p>
+  Le dossier <strong>form</strong> contient les informations des formulaires (contrôles des données etc...).
+</p>
+
+<p>
+  Le dossier <strong>public</strong> est la partie accessible via un client web. C'est pour ça qu'il contient le fichier index.hh
+  qui est la porte d'entr&eacute; de toute application Ninjack qui se respecte.
+</p>
+
+<p>
+  Le dossier <strong>view</strong> contient les vues. Ouais ouais sans blague !
+</p>
+
+<p>
+  On verra plus tard le fichier ninja. C'est le fichier qui nous permettra d'éxécuter les commandes dans le dossier "command".
+  Mais on y viendra plus tard.
+</p>
+
+<p>
+  Les fichiers bootstrap.hh et variables_loader.php ne nous serviront pas de toute façon.
+</p>
+
+<h3>Cr&eacute;ation d'une application</h3>
+
+<p>
+  Tu te souviens du fichier "ninja" plac&eacute; &agrave; la racine de l'application ?
+  Comme c'était au chapitre pr&eacute;c&eacute;dent, j'ai envie de dire "oui, probablement !".
+  Il va nous servir ici.
+</p>
+
+<p>
+  Faisons un cd dans l'application par d&eacute;faut de ninjack :
+</p>
+
+<pre>
+  <code class="sh">
+cd /var/www/application
+  </code>
+</pre>
+Il ne reste plus qu'&agrave; ex&eacute;cuter la commande qui permet la cr&eacute;ation d'une application :
+
+<pre>
+  <code class="sh">
+hhvm ninja Project:create /var/www/tutorial
+  </code>
+</pre>
+<p>
+  Et voil&agrave; on a une application vierge, dont le nom est "tutorial" et qui
+  se situe ici /var/www/tutorial.
+</p>
+
+				</div>
+
+			</div>
+
+		</div>
+
+		
+
+	</body>
+</html>

@@ -1,0 +1,36 @@
+@import "variables";
+
+body,html{
+	height: 100%;
+}
+
+body {
+	font-family: $defaultFont;
+	color: $defaultTextColor;
+	font-size: $defaultFontSize;
+}
+
+a {
+	text-decoration: none;
+	color: inherit;
+}
+
+.columns {
+	position: relative;
+}
+
+.column--left {
+	top:0;
+	bottom:0;
+	left:0;
+	background-color: $columnLeftBackgroundColor;
+	width: $columnLeftWidth;
+}
+
+.column--right {
+	position: absolute;
+	top: 0;
+	right: 0;
+	left: $columnLeftWidth;
+	margin: 20px;
+}

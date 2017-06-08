@@ -1,0 +1,14 @@
+@import "variables";
+
+.header{
+
+	&{
+		margin: $standardMargin;
+	}
+
+	.header-title{
+		font-size: $titleFontSize;
+		font-weight: bold;
+	}
+
+}

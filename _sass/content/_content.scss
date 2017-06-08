@@ -1,0 +1,36 @@
+@import "variables";
+
+.content{
+
+  &{
+    line-height: $lineHeight;
+  }
+
+  h3{
+    font-size: $subTitleFontSize;
+    margin-bottom: 30px;
+    margin-top: 15px;
+    font-weight: bold;
+  }
+
+  a{
+    text-decoration: underline;
+    font-weight: bold;
+  }
+
+  p:not(:last-child),
+  pre:not(:last-child)
+  {
+    margin-bottom: 15px;
+  }
+
+  code.is-block {
+    display: block;
+  }
+}
+
+.content-title{
+  font-size:$titleFontSize;
+  margin-bottom: 30px;
+  font-weight: bold;
+}
