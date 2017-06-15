@@ -9,6 +9,7 @@ use Ninjack\Core\Helper\File as File;
 use Ninjack\Core\Autoloader as Autoloader;
 use Ninjack\Core\Application as Application;
 use Ninjack\Core\Exception\FileNotFoundException as FileNotFoundException;
+use Ninjack\Core\Exception\NinjackException as NinjackException;
 
 /**
  * A singleton class to load some component of the applciation (view, configuration, controller).
@@ -108,7 +109,7 @@ class Loader{
     $path = Application::get_instance()->get_file_from_application(self::COMMAND_PATH.strtolower($command).".hh");
 
     if($path === null){
-      throw new NinjackExeption("Commande ".$command." could not be found.");
+      throw new NinjackException("Commande ".$command." could not be found.");
     }
 
     include_once $path;

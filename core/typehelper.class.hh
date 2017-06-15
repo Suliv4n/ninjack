@@ -64,6 +64,7 @@ class TypeHelper{
   public static function bind_parameters_function(\ReflectionFunctionAbstract $method, Vector<string> $paramaters) : Vector<mixed>{
     $parsed_parameters = Vector{};
     foreach ($method->getParameters() as $i => $parameter) {
+      $parsed_parameters[] = null;
       $parsed_parameters[$i] = self::bind_parameter_value_type($parameter, $paramaters[$i]);
     }
 

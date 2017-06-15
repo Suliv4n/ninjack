@@ -213,10 +213,14 @@ class Application{
     $command_name = explode(":", $command_query)[0];
     $command_method = explode(":", $command_query)[1];
 
+    //Command is like this :
+    //hhvm ninja Class:method arg1 arg2
+    $arguments = $this->cli_arguments->skip(2);
+
     $command = $this->loader->load_command($command_name);
+
     if($command != null){
-      //@todo arguments
-      $command->go($command_method, Vector{});
+      $command->go($command_method, $arguments);
     }
     else{
       throw new CLIException("Command not found");

@@ -17,6 +17,11 @@ abstract class Command{
   protected Console $console;
 
   /**
+   * Regex for parsing arguments
+   */
+  /*private static string $regex_parsing_arguments = '`"((?:(?>\\\)"|[^"])+)"|([^"\s]+)`';*/
+
+  /**
    * Constructor.
    */
   public function __construct(){
@@ -31,24 +36,26 @@ abstract class Command{
    * @param string $command the command name.
    * @param Vector<string> $parameters the paramters of the command.
    */
-  final public function go(string $command, Vector<string> $parameters) : void{
+  final public function go(string $command, Vector<string> $arguments) : void{
 
     $exists = method_exists($this, $command);
     $is_command = false;
-    
+
     if($exists){
       $method = new \ReflectionMethod($this, $command);
       $is_command = isset($method->getAttributes()["Command"]);
 
       if($is_command){
-        $parsed_param = TypeHelper::bind_parameters_function($method, $parameters);
+        $parsed_param = TypeHelper::bind_parameters_function($method, $arguments);
         $method->invokeArgs($this, $parsed_param->toArray());
       }
-
     }
 
-    if(!$exists || !$is_command){
+    if(!$exists){
         throw new CLIException("Command ".$command." not found.");
+    }
+    else if(!$is_command){
+       throw new CLIException("The method ".$command." was found but has no attribute <<Command>>.");
     }
 
   }
