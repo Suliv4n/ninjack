@@ -24,9 +24,9 @@ class Error{
     $variables = Map{
       "error" => $exception,
       "back_trace" => debug_backtrace(),
-      "controller" => Application::get_instance()->get_routed_controller(),
-      "action" => Application::get_instance()->get_routed_action(),
-      "route" => Application::get_instance()->get_route_rule(),
+      "controller" => Application::get_instance()->get_router()->get_routed_route()?->get_controller(),
+      "action" => Application::get_instance()->get_router()->get_routed_route()?->get_action(),
+      "route" => Application::get_instance()->get_router()->get_routed_route()?->get_uri_pattern()
     };
 
     if($exception instanceof NinjackException){

@@ -68,7 +68,7 @@ class Autoloader{
   private function autoload(string $class) : void{
     $parts = explode("\\", $class);
 
-    //@todo scope
+
     $scope = "";
     foreach (self::$scopes as $namespace => $path) {
       if(preg_match("/^".preg_quote($namespace, "/")."/", $class)){

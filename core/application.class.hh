@@ -1,6 +1,7 @@
 <?hh
 namespace Ninjack\Core;
 
+use Ninjack\Core\Router\Router as Router;
 use Ninjack\Core\Response as Response;
 use Ninjack\Core\Session as Session;
 use Ninjack\Core\Loader as Loader;
@@ -166,33 +167,38 @@ class Application{
 
     //@todo no run more than one time
 
+    $this->router->load();
+
     if(!$this->is_initialized){
       $this->initialize();
     }
 
     $uri = $this->request->get_uri();
-    $action = $this->router->route($uri);
+    $route = $this->router->route($uri);
 
-    $controller_name = $this->router->get_controller();
-    $action_name = $this->router->get_action();
-    $parameters = $this->router->get_parameters();
+    if($route != null){
 
-    $controller = $this->load_controller($controller_name);
+      $controller_name = $route->get_controller();
+      $action_name = $route->get_action();
+      $parameters = $route->get_vector_parameters();
 
-    if($controller != null){
+      $controller = $this->load_controller($controller_name);
 
-        $controller->run($action_name, $parameters);
+      if($controller != null){
 
-        $response = $controller->get_response();
+          $controller->run($action_name, $parameters);
+
+          $response = $controller->get_response();
 
 
-        if($response != null){
-          $response->render();
-        }
+          if($response != null){
+            $response->render();
+          }
 
-    }
-    else{
-      throw new NoActionException($controller_name);
+      }
+      else{
+        throw new NoActionException($controller_name);
+      }
     }
 
   }
@@ -252,6 +258,10 @@ class Application{
     return $this->request;
   }
 
+  public function get_router() : Router{
+    return $this->router;
+  }
+
 
   /**
    * Returns the controller by name or null
@@ -267,41 +277,6 @@ class Application{
   }
 
 
-  /**
-   * Return the controller name routed by the router or null if the router
-   * was not lauched or didn't find the route.
-   *
-   * @return ?string the controller name routed by the router or null if the router
-   * was not lauched or didn't find the route.
-   */
-  public function get_routed_controller() : ?string{
-    return $this->router->get_controller();
-  }
-
-  /**
-   * Return the action name routed by the router or null if the router
-   * was not lauched or didn't find the route.
-   *
-   * @return ?string the controller name routed by the router or null if the router
-   * was not lauched or didn't find the route.
-   */
-  public function get_routed_action() : string{
-    return $this->router->get_action();
-  }
-
-  /**
-   * Returns a tuple of two strings corresponding to the route rule that matched
-   * the client request uri. The two strings are null if the uri didn't match any rule.
-   * The first string of the tuple is the regex matched by the uri.
-   * The second string is the action related to the match rule (ie : "Controler:action/param1/param2" ) .
-   *
-   * @see Ninjack\Core\Router::get_route_rule()
-   *
-   * @return ?string  a tuple of two strings corresponding to the route rule.
-   */
-  public function get_route_rule() : (?string, ?string){
-    return $this->router->get_rule();
-  }
 
   public function get_configuration() : Configuration{
     return $this->configuration;
