@@ -128,6 +128,7 @@ class Application{
         $namespace = implode("\\", array_map(($name) ==> ucfirst($name),explode(".",$name)));
         Autoloader::add_scope("Application\\".$namespace, $parent_path);
       }
+
     }
 
     $this->load_events();
@@ -167,11 +168,11 @@ class Application{
 
     //@todo no run more than one time
 
-    $this->router->load();
-
     if(!$this->is_initialized){
       $this->initialize();
     }
+
+    $this->router->load();
 
     $uri = $this->request->get_uri();
     $route = $this->router->route($uri);
@@ -412,6 +413,8 @@ class Application{
      }
 
      $applications_from = $this->parents->keys();
+
+
      if($from !== $this->name){
        $applications_from = $applications_from->takeWhile( $value ==> $value !== $from);
      }
