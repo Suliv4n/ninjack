@@ -1,6 +1,7 @@
 <?hh
 namespace Ninjack\Core\Router;
 use Ninjack\Core\Application as Application;
+use Ninjack\Core\Helper\Url as Url;
 use Ninjack\Core\Loader as Loader;
 use Ninjack\Core\Router\Route as Route;
 use Ninjack\Core\Configuration as Configuration;
@@ -22,6 +23,11 @@ class Router {
    * The routed route rule.
    */
   private ?Route $route;
+
+  /**
+   * The name of the routed route.
+   */
+  private ?string $route_name;
 
   private Map<string, Route> $routes = Map{};
 
@@ -50,6 +56,7 @@ class Router {
       if(preg_match("/^".$escaped."$/", $uri, $matches)){
 
         $this->route = $route;
+        $this->route_name = $name;
 
         foreach ($matches as $key => $value) {
           if(is_int($key)){
@@ -71,6 +78,10 @@ class Router {
     return $this->route;
   }
 
+  public function get_routed_route_name() : ?string {
+    return $this->route_name;
+  }
+
 
   public function load() {
     $this->configuration = Application::get_instance()->loader()->load_configuration("route.hh");
@@ -87,6 +98,27 @@ class Router {
       }
 
     }
+  }
+
+
+  public function create_url_by_reference(string $reference, Vector<mixed> $parameters) : string{
+
+    $route = $this->routes[$reference];
+
+    if($route === null){
+      return "";
+    }
+
+
+    $url = $route->get_build_pattern();
+
+    foreach ($parameters as $i => $parameter) {
+      $parameter_index = $i+1;
+      $url = preg_replace("/\\\$$parameter_index/",$parameter, $url);
+
+    }
+
+    return $url;
   }
 
 }
