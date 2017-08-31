@@ -118,6 +118,9 @@ class Router {
 
     }
 
+    $url = URL::absolute_url($url);
+
+
     return $url;
   }
 
