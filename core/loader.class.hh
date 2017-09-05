@@ -179,9 +179,10 @@ class Loader{
   public function load_all_widgets() : void{
     foreach (Application::get_instance()->get_applications_directories() as $dir) {
       if(!$this->widgets_loaded){
-        $this->load_widgets_dir(Loader::XHP_PATH);
+        $this->load_widgets_dir($dir.DIRECTORY_SEPARATOR.Loader::XHP_PATH);
       }
     }
+    $this->widgets_loaded = true;
   }
 
   /**
@@ -192,7 +193,6 @@ class Loader{
    */
   private function load_widgets_dir(string $path) : void{
     $files = File::scandir($path);
-
     if($files != null){
       foreach ($files as $file) {
         if(!is_dir($file)){
@@ -204,7 +204,6 @@ class Loader{
           $this->load_widgets_dir($file);
         }
       }
-      $this->widgets_loaded = true;
     }
   }
 

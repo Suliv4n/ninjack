@@ -129,6 +129,14 @@ class View{
   }
 
 
+  /**
+   * Generates an asset and returns the XHPChild that calls the asset in the dom.
+   *
+   * @param string $path the path of the asset file to generate.
+   * @param ?string $theme the theme to apply.
+   *
+   * @return \XHPChild The XHPChild that calls the asset in dom.
+   */
   public function asset(string $path, ?string $theme = null) : \XHPChild{
 
     $url = Application::get_instance()->server()->get_root_url();
@@ -168,6 +176,14 @@ class View{
     return "";
   }
 
+  /**
+   * Returns the absolute path of the asset path in parameter.
+   *
+   * @param string The asset path.
+   * @param ?sting $theme The theme to apply.
+   *
+   * @return string The absolute path of the asset path in parameter.
+   */
   private function get_asset_absolute_path(string $path, ?string $theme = null) : ?string{
     if($this->theme != null || $theme != null){
       $asset_path = Application::get_instance()->get_file_from_application(
@@ -186,6 +202,13 @@ class View{
 
   }
 
+  /**
+   * Generates an asset and put it in public asset directory.
+   *
+   * @param string $filepath the path of the file to generate.
+   *
+   * @return string The public path of asset generated.
+   */
   private function generate_asset(string $filepath) : ?string{
 
 
@@ -240,6 +263,14 @@ class View{
     return !$status ? null : $public_assets_path;
   }
 
+  /**
+   * Returns the content of the file which path is in parameter.
+   * Eventually compiles it.
+   *
+   * @param string the filepath.
+   *
+   * @return ?string $filepath The file content or null if file doesn't exist.
+   */
   public function get_asset_content(string $filepath) : ?string{
     $extension = pathinfo($filepath, PATHINFO_EXTENSION);
 

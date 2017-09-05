@@ -87,7 +87,7 @@
         </div>
         <div>
           <?php
-            echo "Rule : \"".$route[0]."\" => \"".$route[1]."\"<br/>";
+            echo "Rule : \"".$rout_name."\" => \"".$route."\"<br/>";
             echo "Controller : ".$controller."<br/>";
             echo "Action : ".$action."<br/>";
           ?>

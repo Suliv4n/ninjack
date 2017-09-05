@@ -95,6 +95,13 @@ class File{
 
   }
 
+  /**
+   * Returns the realpath of a file path.
+   *
+   * @param string $path the path to test.
+   *
+   * @return string the real file path.
+   */
   public static function realpath(string $path) : string{
     return array_reduce(explode(DIRECTORY_SEPARATOR, $path),
     ($a, $b) ==> {

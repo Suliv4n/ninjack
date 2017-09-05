@@ -9,10 +9,20 @@ use Ninjack\Core\User\UserInterface as UserInterface;
  */
 class Server{
 
+  /**
+   * Returns the server root path.
+   *
+   * @return string the server root path.
+   */
   public function get_root_path() : string{
     return $_SERVER["DOCUMENT_ROOT"];
   }
 
+  /**
+   * Returns the server root url.
+   *
+   * @return string the server root url.
+   */
   public function get_root_url() : string{
 
     $ssl = $this->get_item("HTTPS");
@@ -28,6 +38,14 @@ class Server{
     return $host;
   }
 
+  /**
+   * Returns a server item from its key.
+   *
+   * @param string $key the item key.
+   * @param ?string $default the default value.
+   *
+   * @return ?string The server item or default value if it doesn't exist.
+   */
   public function get_item(string $key, ?string $default = null) : ?string{
     return isset($_SERVER[$key]) ? $_SERVER[$key] : $default;
   }

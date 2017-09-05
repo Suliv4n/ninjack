@@ -59,15 +59,34 @@ class Application{
   */
   private Session $session;
 
+  /**
+   * Application global configurations.
+   */
   private Configuration $configuration;
 
+  /**
+   * Cli arguments value.
+   */
   private Vector<string> $cli_arguments;
 
+  /**
+   * The parents application. keys are application and value are appliations path.
+   */
   private Map<string,string> $parents = Map{};
 
+  /**
+   * True if the application is currently running.
+   */
   private bool $is_running = false;
+
+  /**
+   * True if the application is initialized.
+   */
   private bool $is_initialized = false;
 
+  /**
+   * Server data.
+   */
   private Server $server;
 
   /**
@@ -90,6 +109,10 @@ class Application{
 
   }
 
+
+  /**
+   * initialize the application.
+   */
   private function initialize() : void {
     $space = $this->configuration->get_string("space", "");
 
@@ -138,6 +161,9 @@ class Application{
     $this->event_manager->trigger("ninjack.core.application_initialized");
   }
 
+  /**
+   * load the vents configuration.
+   */
   private function load_events() : void{
     $configuration = $this->loader->load_configuration("events.hh");
 
@@ -151,6 +177,11 @@ class Application{
 
   }
 
+  /**
+   * Returns the event manager.
+   *
+   * @return EventManager The event manager.
+   */
   public function get_event_manager() : EventManager{
     return $this->event_manager;
   }
@@ -259,9 +290,7 @@ class Application{
     return $this->request;
   }
 
-  public function get_router() : Router{
-    return $this->router;
-  }
+
 
 
   /**
@@ -277,8 +306,21 @@ class Application{
     return $this->loader->load_controller($controller);
   }
 
+  /**
+   * Returns the application router.
+   *
+   * @return Router The application router.
+   */
+  public function load_router() : Router{
+    return $this->router;
+  }
 
 
+  /**
+   * Returns the applciation configuration.
+   *
+   * @return Configuration the application configuration.
+   */
   public function get_configuration() : Configuration{
     return $this->configuration;
   }
@@ -290,6 +332,16 @@ class Application{
    */
   public function loader() : Loader{
     return $this->loader;
+  }
+
+
+  /**
+   * Returns the router of the application.
+   *
+   * @return Ninjack\Core\Router\Router the router of the application.
+   */
+  public function router() : Router{
+    return $this->router;
   }
 
   /**
@@ -458,10 +510,20 @@ class Application{
 
    }
 
+   /**
+    * Returns the public folder of the current application.
+    *
+    * @return string the path of the public folder.
+    */
    public function get_public_path() : string{
        return $this->server->get_root_path();
    }
 
+   /**
+    * Returns the application path.
+    *
+    * @return the application path.
+    */
    public function get_application_path() : string{
      if(!$this->is_cli()){
        return dirname($this->get_public_path());
@@ -472,6 +534,11 @@ class Application{
      }
    }
 
+   /**
+    * Returns asset directories of current application and parents application.
+    *
+    * @return Vector<string> The application and parent applications assets directories path.
+    */
    public function get_assets_directories() : Vector<string>{
       $directories = Vector{};
 
@@ -484,6 +551,11 @@ class Application{
       return $directories;
    }
 
+   /**
+    * Returns the current application and parent applications paths.
+    *
+    * @return Vector<string> The current application and parent applications paths.
+    */
    public function get_applications_directories() : Vector<string>{
      $directories = Vector{};
 
@@ -493,6 +565,15 @@ class Application{
      return $directories;
    }
 
+   /**
+    * Returns the relative path of the filename in parameter.
+    * The path returned is relative to the application path or parent applications directory.
+    * If the file not exists in current application or parent applications, returns null.
+    *
+    * @param string $filename The filename.
+    *
+    * @return the relative path of a file, null if file not exists in applications.
+    */
    public function get_relative_path(string $filename) : ?string{
 
      foreach ($this->get_applications_directories() as $dir) {
@@ -509,6 +590,14 @@ class Application{
      return null;
    }
 
+   /**
+    * Returns the application which contents the filepath in parameter.
+    *
+    * @param string $filepath The file path to test.
+    *
+    * @return (string,string) A tuple : the first value is the application which file
+    * is containing, the second value is the relative path of this file.
+    */
    public function belong_to(string $filepath) : (?string, ?string){
 
      $filepath = File::realpath($filepath);

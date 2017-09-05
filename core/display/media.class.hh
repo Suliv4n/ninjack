@@ -1,9 +1,22 @@
 <?hh
 namespace Ninjack\Core\Display;
 
+/**
+ * Represents a css media.
+ *
+ * @author Sulivan.
+ */
 class Media{
 
 
+  /**
+   * Constructor
+   *
+   * @param ?int $min_width the min width of viewport
+   * @param ?int $max_width the max width of viewport
+   * @param ?string $media the media of viewport
+   * @param Map<string, string> $rules additionnal viewport rules
+   */
   public function __construct(
     private ?int $min_width = null,
     private ?int $max_width = null,
@@ -13,6 +26,11 @@ class Media{
 
   }
 
+  /**
+   * Returns the css media query.
+   *
+   * @return string the css media query.
+   */
   public function get_query() : string{
 
     $media = $this->media;
@@ -35,6 +53,13 @@ class Media{
 
   }
 
+  /**
+   * Wraps the content in parameter with the media query.
+   *
+   * @param string $content the content to wrap.
+   *
+   * @return string the content wraped.
+   */
   public function wrap(string $content) : string{
     return $this->get_query() . "{" . $content ."}";
   }

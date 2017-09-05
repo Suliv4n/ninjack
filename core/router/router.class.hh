@@ -43,7 +43,7 @@ class Router {
    *
    * @param string $uri the uri to route.
    *
-   * @return ?string the action (ie "Controller:action/param1/param2") matched or null if the uri match no route.
+   * @return ?Route the route mathing the uri.
    */
   public function route(string $uri) : ?Route{
 
@@ -74,16 +74,31 @@ class Router {
 
   }
 
+  /**
+   * Returns the current route. If no route was matched or
+   * route() methods was not executed then returns null.
+   *
+   * @return ?Route The current route or null if no route matched.
+   */
   public function get_routed_route() : ?Route {
     return $this->route;
   }
 
+  /**
+   * Returns the current route name. If no route was matched or
+   * route() methods was not executed then returns null.
+   *
+   * @return ?string The current route name or null if no route matched.
+   */
   public function get_routed_route_name() : ?string {
     return $this->route_name;
   }
 
 
-  public function load() {
+  /**
+   * load the router.
+   */
+  public function load() : void{
     $this->configuration = Application::get_instance()->loader()->load_configuration("route.hh");
     $routes = $this->configuration?->get("routes");
 
@@ -101,6 +116,15 @@ class Router {
   }
 
 
+  /**
+   * Create an absilute url using the route patterns in route configuration.
+   *
+   * @param string $reference The reference name of a route.
+   * @param Vector<mixed> $parameters The parameters needed to build the url.
+   *
+   * @return string The created url.
+   *
+   */
   public function create_url_by_reference(string $reference, Vector<mixed> $parameters) : string{
 
     $route = $this->routes[$reference];
