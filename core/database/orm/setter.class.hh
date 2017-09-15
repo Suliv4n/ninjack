@@ -2,7 +2,7 @@
 namespace Ninjack\Core\Database\Orm;
 use Ninjack\Core\TypeHelper as TypeHelper;
 use Ninjack\Core\Database\Entity as Entity;
-use Ninjack\Core\Database\Where as Where;
+use Ninjack\Core\Database\SQLWhere as SQLWhere;
 use Ninjack\Core\Enum\DBOperator as DBOperator;
 
 
@@ -44,7 +44,7 @@ class Setter{
       throw new Exception("Invalid foreign key setter");
     }
     $values = Entity::get($class_target->__toString(), Vector{
-      new Where($this->foreign_key ?? "", $value ), //$this->foreign_key can't be null here
+      new SQLWhere($this->foreign_key ?? "", $value ), //$this->foreign_key can't be null here
     });
     $fk_entity = null;
     if(count($values) == 1){
@@ -72,7 +72,7 @@ class Setter{
     if($target_class->implementsInterface("Indexish")){
       $collection = $target_class->newInstanceWithoutConstructor();
       $entities = Entity::get($generic ?? "", Vector{
-        new Where($this->column, $value)
+        new SQLWhere($this->column, $value)
       });
       foreach ($entities as $value) {
         $collection[] = $value;
@@ -98,7 +98,7 @@ class Setter{
     if($target_class->implementsInterface("Indexish")){
       $collection = $target_class->newInstanceWithoutConstructor();
       $entities = Entity::get($generic ?? "", Vector{
-        new Where($this->column, $value)
+        new SQLWhere($this->column, $value)
       });
       foreach ($entities as $value) {
         $collection[] = $value;
@@ -132,7 +132,7 @@ class Setter{
       }
 
       Entity::get($generic, Vector{
-        new Where($this->onetomany ?? "", "(".implode(",",$ids).")", DBOperator::IN ),
+        new SQLWhere($this->onetomany ?? "", "(".implode(",",$ids).")", DBOperator::IN ),
       });
 
 

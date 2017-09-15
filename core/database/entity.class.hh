@@ -3,7 +3,7 @@ namespace Ninjack\Core\Database;
 use Ninjack\Core\Application as Application;
 use Ninjack\Core\TypeHelper as TypeHelper;
 use Ninjack\Core\Database\Orm\ORMObject as ORMObject;
-use Ninjack\Core\Database\Where as Where;
+use Ninjack\Core\Database\SQLWhere as SQLWhere;
 
 
 abstract class Entity{
@@ -15,7 +15,7 @@ abstract class Entity{
 
   private static Map<string, ORMObject> $class_maps = Map{};
 
-  public static function get(string $class, Vector<Where> $filters = Vector{}) : Vector<Entity>{
+  public static function get(string $class, Vector<SQLWhere> $filters = Vector{}) : Vector<Entity>{
     $class_map = self::get_orm($class);
     return $class_map->get($filters);
   }

@@ -2,7 +2,7 @@
 namespace Ninjack\Core\Database;
 use Ninjack\Core\Enum\DBOperator as DBOperator;
 
-class Where{
+class SQLWhere{
   public function __construct(
     private string $column,
     private mixed $value,

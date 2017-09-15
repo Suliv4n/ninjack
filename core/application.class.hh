@@ -90,6 +90,11 @@ class Application{
   private Server $server;
 
   /**
+   *  Databases loaded.
+   */
+   private Map<string, DBConnector> $loaded_databases = Map{};
+
+  /**
     * The application constructor.
     */
   private function __construct(){
@@ -119,12 +124,15 @@ class Application{
     $application_name = "";
     $package_path = $this->get_application_path();
 
+
     foreach (explode(".", $space) as $package) {
       if(!empty($space)){
-        $application_name = ".".$space;
+        $application_name = $space;
+
         if(basename($package_path) != $space){
-          die("error");
+          die("error"); //@todo what the fuck ?! faut mettre une exception ici !
         }
+        $application_name = ".".$space;
         $package_path = realpath(dirname($package_path));
       }
     }
@@ -151,7 +159,6 @@ class Application{
         $namespace = implode("\\", array_map(($name) ==> ucfirst($name),explode(".",$name)));
         Autoloader::add_scope("Application\\".$namespace, $parent_path);
       }
-
     }
 
     $this->load_events();
@@ -255,7 +262,9 @@ class Application{
     //hhvm ninja Class:method arg1 arg2
     $arguments = $this->cli_arguments->skip(2);
 
+
     $command = $this->loader->load_command($command_name);
+
 
     if($command != null){
       $command->go($command_method, $arguments);
@@ -362,7 +371,7 @@ class Application{
       if($databases instanceof Map){
         $configuration->get("databases");
         if(!empty($databases[$name]) && $databases[$name] instanceof Map){
-          return new DBConnector(
+          $connector = new DBConnector(
             $databases[$name]["dbdriver"],
             $databases[$name]["hostname"],
             $databases[$name]["port"],
@@ -371,6 +380,10 @@ class Application{
             $databases[$name]["database"],
             $databases[$name]["charset"],
           );
+
+          $this->loaded_databases[$name] = $connector;
+
+          return $connector;
         }
       }
     }
@@ -378,6 +391,32 @@ class Application{
     return null;
 
   }
+
+
+  /**
+   * Get the database connector given by its configuration name.
+   *
+   * @param $name The database configuration name.
+   *
+   * @return \Ninjack\Core\Database\DBConnector The database connector.
+   */
+  public function get_database(string $name) : ?DBConnector {
+
+    $database = null;
+
+    if($this->loaded_databases->containsKey($name) && $this->loaded_databases[$name] != null){
+      $database = $this->loaded_databases[$name];
+    }
+    else {
+      $database = $this->load_database($name);
+    }
+
+    $database?->initialize();
+
+    return $database;
+
+  }
+
 
   /**
    * Returns the current session.

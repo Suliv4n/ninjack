@@ -3,7 +3,7 @@ namespace Ninjack\Core\Database\Orm\Field;
 use Ninjack\Core\Database\Entity as Entity;
 use Ninjack\Core\Database\Orm\Field\Field as Field;
 use Ninjack\Core\TypeHelper as TypeHelper;
-use Ninjack\Core\Database\Where as Where;
+use Ninjack\Core\Database\SQLWhere as SQLWhere;
 
 class ManyToOne extends Field{
 
@@ -35,14 +35,14 @@ class ManyToOne extends Field{
 
 
         $values = Entity::get($generic, Vector{
-          new Where($this->name, $value ),
+          new SQLWhere($this->name, $value ),
         });
 
         if($target_class->implementsInterface("Indexish")){
           $collection = $target_class->newInstanceWithoutConstructor();
 
           $entities = Entity::get($generic, Vector{
-            new Where($this->name, $value)
+            new SQLWhere($this->name, $value)
           });
 
           foreach ($entities as $value) {

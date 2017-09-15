@@ -2,7 +2,7 @@
 namespace Ninjack\Core\Database\Orm\Field;
 use Ninjack\Core\Application as Application;
 use Ninjack\Core\Database\Entity as Entity;
-use Ninjack\Core\Database\Where as Where;
+use Ninjack\Core\Database\SQLWhere as SQLWhere;
 use Ninjack\Core\Database\Orm\Field\Field as Field;
 use Ninjack\Core\Enum\DBOperator as DBOperator;
 use Ninjack\Core\TypeHelper as TypeHelper;
@@ -82,7 +82,7 @@ class ManyToMany extends Field{
         $entities = Vector{};
         if(count($ids) > 0){
           $entities = Entity::get($generic, Vector{
-            new Where($this->target_key, $ids, DBOperator::IN)
+            new SQLWhere($this->target_key, $ids, DBOperator::IN)
           });
 
           foreach ($entities as $value) {

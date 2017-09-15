@@ -37,6 +37,7 @@ class Autoloader{
     $scopes = self::$scopes->toArray();
     uasort($scopes, ($a, $b) ==> {return strlen($a) < strlen($b);});
 
+
     $namespace = "";
     foreach ($scopes as $ns => $path) {
       //var_dump($path, $filepath, preg_match("/^".preg_quote($path, "/")."/", $filepath));
@@ -47,13 +48,12 @@ class Autoloader{
       }
     }
 
+
     foreach (explode(DIRECTORY_SEPARATOR, $filepath) as $part) {
       if(strlen($part) > 0){
         $namespace .= "\\".ucfirst($part);
       }
     }
-
-
 
     return $namespace;
 

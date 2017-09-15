@@ -3,7 +3,7 @@ namespace Ninjack\Core\Database\Orm;
 use Ninjack\Core\TypeHelper as TypeHelper;
 use Ninjack\Core\Application as Application;
 use Ninjack\Core\Database\Entity as Entity;
-use Ninjack\Core\Database\Where as Where;
+use Ninjack\Core\Database\SQLWhere as SQLWhere;
 use Ninjack\Core\Database\Orm\Getter as Getter;
 use Ninjack\Core\Database\Orm\Setter as Setter;
 use Ninjack\Core\Database\Orm\Field\Field as Field;
@@ -141,7 +141,7 @@ class ORMObject{
   }
 
 
-  public function get(Vector<Where> $filters = Vector{}) : Vector<Entity>{
+  public function get(Vector<SQLWhere> $filters = Vector{}) : Vector<Entity>{
 
     //@todo get default database or mapped database
     $entites = Vector{};

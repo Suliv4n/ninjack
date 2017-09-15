@@ -1,7 +1,7 @@
 <?hh
 namespace Ninjack\Core\Database\Orm\Field;
 use Ninjack\Core\Database\Entity as Entity;
-use Ninjack\Core\Database\Where as Where;
+use Ninjack\Core\Database\SQLWhere as SQLWhere;
 use Ninjack\Core\Database\Orm\Field\Field as Field;
 
 class ForeignKey extends Field{
@@ -24,7 +24,7 @@ class ForeignKey extends Field{
       }
 
       $values = Entity::get($class_target->__toString(), Vector{
-        new Where($this->target_column, $value ),
+        new SQLWhere($this->target_column, $value ),
       });
 
       if(count($values) > 0 && $this->setter != null){

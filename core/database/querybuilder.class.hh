@@ -2,8 +2,8 @@
 namespace Ninjack\Core\Database;
 use Ninjack\Core\Enum\DBOperator as DBOperator;
 use Ninjack\Core\Database\DBConnector as DBConnector;
-use Ninjack\Core\Database\Where as Where;
-
+use Ninjack\Core\Database\SQLWhere as SQLWhere;
+use Ninjack\Core\Database\Table as Table;
 
 
 class QueryBuilder{
@@ -13,14 +13,18 @@ class QueryBuilder{
   private Map<string,Map<string,mixed>> $update;
   private Map<string,Map<string,mixed>> $insert;
   private ?string $delete;
-  private Vector<Where> $where;
+
 
   private Vector<string> $joins;
   private Vector<string> $on;
 
   private Vector<mixed> $variables;
 
+  private Vector<Table> $create_tables;
+
   private DBConnector $connector;
+
+  private Vector<SQLWhere> $where;
 
   public function __construct(DBConnector $connector){
     $this->selected_colomuns = new Map(null);
@@ -29,6 +33,7 @@ class QueryBuilder{
     $this->insert = new Map(null);
     $this->where = new Vector(null);
     $this->joins = new Vector(null);
+    $this->create_tables = new Vector(null);
     $this->on = new Vector(null);
     $this->variables = new Vector(null);
 
@@ -71,7 +76,7 @@ class QueryBuilder{
   public function where(string $column, mixed $value, DBOperator $operator = DBOperator::EQUALS) : QueryBuilder{
 
     $this->where->add(
-      new Where($column, $value, $operator)
+      new SQLWhere($column, $value, $operator)
     );
 
     return $this;
@@ -84,9 +89,16 @@ class QueryBuilder{
     return $this;
   }
 
-  public function many_where(Vector<Where> $where) : QueryBuilder{
+  public function many_where(Vector<SQLWhere> $where) : QueryBuilder{
 
     $this->where->addAll($where);
+
+    return $this;
+  }
+
+  public function create_table(Table $table) : QueryBuilder
+  {
+    $this->create_tables->add($table);
 
     return $this;
   }
@@ -100,9 +112,12 @@ class QueryBuilder{
     $query .= $this->__generate_delete_query();
     $query .= $this->__generate_where_query();
     $query .= $this->__generate_insert_query();
+    $query .= $this->__generate_create_table_query();
+
 
     return $query;
   }
+
 
   private function __generate_select_query() : string{
     $query = "";
@@ -235,6 +250,34 @@ class QueryBuilder{
     return $query;
   }
 
+  public function __generate_create_table_query() : string{
+
+    $query = "";
+
+    if(!$this->create_tables->isEmpty())
+    {
+      foreach($this->create_tables as $table)
+      {
+        $query = "CREATE TABLE ". $table->get_name() ." ";
+
+        if(!$table->get_columns()->isEmpty()){
+          $query .= "(";
+          foreach($table->get_columns() as $column)
+          {
+            $query .= $column . "\n,";
+          }
+
+          $query = substr($query, 0, strlen($query)-1);
+          $query .= ")";
+        }
+
+        $query .= ";";
+      }
+    }
+
+
+    return $query;
+  }
 
   public function execute() : bool{
     return $this->connector->execute($this->get_query(), $this->variables);
