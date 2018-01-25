@@ -69,6 +69,7 @@ class Router {
       }
 
     }
+    die();
 
     return null;
 

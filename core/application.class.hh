@@ -214,7 +214,7 @@ class Application{
 
     $uri = $this->request->get_uri();
     $route = $this->router->route($uri);
-
+    
     if($route != null){
 
       $controller_name = $route->get_controller();

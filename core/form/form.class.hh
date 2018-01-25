@@ -128,6 +128,10 @@ class Form{
   public function load_form($name) : Form{
     $path = Application::get_instance()->loader()->get_form_path($name);
 
+    if($path === null){
+      throw  new \Exception("No form was found with the name : $name"); 
+    }
+
     include $path;
 
     $this->name = $name;
@@ -290,7 +294,5 @@ class Form{
 
     return $entity;
   }
-
-
 
 }

@@ -20,7 +20,7 @@ class QueryBuilder{
 
   private Vector<mixed> $variables;
 
-  private Vector<Table> $create_tables;
+  private Vector<(Table, bool)> $create_tables;
 
   private DBConnector $connector;
 
@@ -96,9 +96,9 @@ class QueryBuilder{
     return $this;
   }
 
-  public function create_table(Table $table) : QueryBuilder
+  public function create_table(Table $table, bool $if_not_exists = true) : QueryBuilder
   {
-    $this->create_tables->add($table);
+    $this->create_tables->add(tuple($table, $if_not_exists));
 
     return $this;
   }
@@ -256,9 +256,12 @@ class QueryBuilder{
 
     if(!$this->create_tables->isEmpty())
     {
-      foreach($this->create_tables as $table)
+      foreach($this->create_tables as $table_settings)
       {
-        $query = "CREATE TABLE ". $table->get_name() ." ";
+        $table = $table_settings[0];
+        $if_not_exists = $table_settings[1];
+
+        $query .= "CREATE TABLE " . ($if_not_exists ? "IF NOT EXISTS " : "") . $table->get_name() ." ";
 
         if(!$table->get_columns()->isEmpty()){
           $query .= "(";
@@ -285,6 +288,10 @@ class QueryBuilder{
 
   public function get() : \PDOStatement{
     return $this->connector->query($this->get_query(), $this->variables)[1];
+  }
+
+  public function get_error() : mixed {
+    return $this->connector->get_error();
   }
 
 

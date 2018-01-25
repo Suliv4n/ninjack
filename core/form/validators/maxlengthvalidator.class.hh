@@ -4,7 +4,7 @@ use Ninjack\Core\Form\FormValidator as FormValidator;
 
 
 /**
- * Input validator checkin the maximum length.
+ * Input validator checking the maximum length.
  *
  * @author Sulivan
  */
@@ -23,7 +23,7 @@ class MaxLengthValidator extends FormValidator{
    */
   public function __construct(int $maximum, ?string $message = null){
     if($message == null){
-      $message = "{name} must have ".$maximum." character(s) or less.";
+      $message = "{name} must have " . $maximum . " character(s) or less.";
     }
     parent::__construct($message);
 
@@ -34,7 +34,7 @@ class MaxLengthValidator extends FormValidator{
    * Returns false if the number of characters of the value is greater
    * than the maximum number of characters authorise, else returns true.
    * If the value is a Traversable, then the method checks all values in the value and
-   * returns false when a value isn ot valid.
+   * returns false when a value is not valid.
    *
    * @return true if the value is valid, else false.
    */
@@ -44,6 +44,7 @@ class MaxLengthValidator extends FormValidator{
     if(!($value instanceof Traversable)){
       $value = Vector{$value};
     }
+
     if($value instanceof Traversable){
       foreach ($value as $val) {
 

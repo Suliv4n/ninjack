@@ -20,6 +20,7 @@ class Loader{
 
   const string CONFIGURATION_PATH = "conf".DIRECTORY_SEPARATOR;
   const string THEME_PATH = "theme".DIRECTORY_SEPARATOR;
+  const string FORM_PATH = "form".DIRECTORY_SEPARATOR;
   const string VIEW_PATH = "view".DIRECTORY_SEPARATOR;
   const string ASSETS_PATH = "assets".DIRECTORY_SEPARATOR;
   const string CORE_VIEW_PATH = CORE_PATH."view".DIRECTORY_SEPARATOR;
@@ -214,8 +215,8 @@ class Loader{
    *
    * @return the configuration absolute path of the form configuration.
    */
-  public function get_form_path(string $name) : string {
-    return FORM_PATH.$name.".form.hh";
+  public function get_form_path(string $name) : ?string {
+    return Application::get_instance()->get_file_from_application(self::FORM_PATH.$name.".form.hh");
   }
 
   /**
