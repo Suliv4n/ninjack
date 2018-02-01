@@ -101,7 +101,7 @@ class Form{
    * @param FormInput $input the input to add.
    * @param Vector<FormValidator> $validators Validators to attach to the input.
    */
-  public function add_input(FormInput $input, Vector<FormValidator> $validators) : void{
+  public function add_input(FormInput $input, Vector<FormValidator> $validators = Vector{}) : void{
     $input->set_validators($validators);
     $input->set_form_source($this);
 
