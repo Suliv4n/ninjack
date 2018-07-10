@@ -57,7 +57,7 @@ class SelectInput extends FormInput{
     }
 
     foreach ($this->choices as $value => $label) {
-      $input->appendChild(<option value={$value}>{$label}</option>);
+      $input->appendChild(<option value={$value}>{(string)$label}</option>);
     }
 
     return $input;

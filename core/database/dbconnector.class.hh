@@ -95,7 +95,7 @@ class DBConnector{
   }
 
   public function get_error() : mixed {
-    return $this->pdo->errorInfo();
+    return $this->pdo?->errorInfo();
   }
 
 }
