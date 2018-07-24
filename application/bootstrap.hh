@@ -2,7 +2,7 @@
 define("DS", DIRECTORY_SEPARATOR);
 define("ROOT", dirname(__FILE__).DS);
 define("NINJACK_PATH", "/var/www/ninjack".DS);
-define("CORE_PATH", NINJACK_PATH."core".DS);
+define("CORE_PATH", NINJACK_PATH."Core".DS);
 
 
 //@todo faudrait faire un truc ici pour savoir quel path utilisé pour l'application
@@ -17,8 +17,8 @@ define("COMMAND_PATH", APPLICATION_PATH."command".DS);
 define("CORE_VIEW_PATH", ROOT."core".DS."view".DS);
 define("THEME_PATH", APPLICATION_PATH."theme".DS);
 
-require_once CORE_PATH."autoloader.class.hh";
-Ninjack\Core\AutoLoader::register();
+require_once CORE_PATH . "Autoloader.hh";
+Ninjack\Core\Autoloader::register();
 
 //composer autoload
 $vendor_autoload_path = __DIR__ . '/vendor/autoload.php';
