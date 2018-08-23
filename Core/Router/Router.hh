@@ -53,7 +53,7 @@ class Router {
 
       $matches = Vector{};
 
-      if(preg_match("/^".$escaped."$/", $uri, $matches)){
+      if(preg_match("/^".$escaped."$/", $uri, &$matches)){
 
         $this->route = $route;
         $this->route_name = $name;
@@ -142,7 +142,7 @@ class Router {
 
     }
 
-    $url = URL::absolute_url($url);
+    $url = Url::absolute_url($url);
 
 
     return $url;

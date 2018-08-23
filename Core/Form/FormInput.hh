@@ -4,6 +4,8 @@ use Ninjack\Core\Application as Application;
 use Ninjack\Core\Form\Form as Form;
 use Ninjack\Core\Form\FormValidator as FormValidator;
 
+use xhp_label;
+
 /**
  * Abstract class for Fom input.
  *

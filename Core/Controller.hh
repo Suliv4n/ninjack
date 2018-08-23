@@ -57,9 +57,7 @@ class Controller{
   public final function run(string $action, Vector $parameters) : void{
 
     $class = new \ReflectionClass($this);
-    $controller = strtolower(
-      $class->getShortName()
-    );
+    $controllerName = $class->getShortName();
 
     $is_action = false;
     $exists = method_exists($this, $action);
@@ -71,17 +69,20 @@ class Controller{
       $theme = $this->theme ?? $this->application->get_configuration()->get_string("default_theme");
 
 
-      $this->view = new View($controller."/".$action."/default",
+      $this->view = new View($controllerName."/".$action."/default",
         $theme
       );
 
       $parameters = $this->cleaned_parameters($action, $parameters);
       $this->response = new Response($this->view);
-      call_user_method_array($action, $this, $parameters->toArray());
+
+      $controller = $this;
+
+      call_user_method_array($action, &$controller, $parameters->toArray());
       $this->ran = true;
     }
     if(!$exists || !$is_action){
-      throw new NoActionException($controller, $action);
+      throw new NoActionException($controllerName, $action);
     }
 
   }

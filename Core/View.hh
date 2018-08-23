@@ -6,6 +6,8 @@ use Ninjack\Core\Helper\File as File;
 use Ninjack\Core\Display\AssetsCompiler as AssetsCompiler;
 use Ninjack\Core\Display\Media as Media;
 
+use xhp_link as xhp_link;
+
 /**
  * Class that represents view.
  *
@@ -162,7 +164,7 @@ class View{
       $extension = pathinfo($public_path, PATHINFO_EXTENSION);
       switch($extension){
         case "js":
-          $xhp = <script type="" src={$url} type="text/javascript"></script>;
+          $xhp = <script src={$url} type="text/javascript"></script>;
           break;
         case "css":
         default:

@@ -20,7 +20,7 @@ class Loader{
 
   const string CONFIGURATION_PATH = "conf".DIRECTORY_SEPARATOR;
   const string THEME_PATH = "theme".DIRECTORY_SEPARATOR;
-  const string FORM_PATH = "form".DIRECTORY_SEPARATOR;
+  const string FORM_PATH = "Form".DIRECTORY_SEPARATOR;
   const string VIEW_PATH = "view".DIRECTORY_SEPARATOR;
   const string ASSETS_PATH = "assets".DIRECTORY_SEPARATOR;
   const string CORE_VIEW_PATH = CORE_PATH."view".DIRECTORY_SEPARATOR;
@@ -68,10 +68,12 @@ class Loader{
    * @return ?Ninjack\Core\Controller the controller loaded or null if the controller
    * was not found.
    */
-  public function load_controller(string $controller) : ?Controller{
-    $path = Application::get_instance()->get_file_from_application(self::CONTROLLER_PATH.strtolower($controller).".hh");
+  public function load_controller(string $controller) : ?Controller
+  {
+    $path = Application::get_instance()->get_file_from_application(self::CONTROLLER_PATH . $controller . ".hh");
 
-    if($path === null){
+    if ($path === null)
+    {
       throw new FileNotFoundException("Controller file '".$controller."' not found in application.");
     }
 
@@ -177,9 +179,12 @@ class Loader{
    * Load all the widgets.
    * Widgets are xhp elements so no namespace supported.
    */
-  public function load_all_widgets() : void{
-    foreach (Application::get_instance()->get_applications_directories() as $dir) {
-      if(!$this->widgets_loaded){
+  public function load_all_widgets() : void
+  {
+    foreach (Application::get_instance()->get_applications_directories() as $dir)
+    {
+      if (!$this->widgets_loaded)
+      {
         $this->load_widgets_dir($dir.DIRECTORY_SEPARATOR.Loader::XHP_PATH);
       }
     }
@@ -215,8 +220,9 @@ class Loader{
    *
    * @return the configuration absolute path of the form configuration.
    */
-  public function get_form_path(string $name) : ?string {
-    return Application::get_instance()->get_file_from_application(self::FORM_PATH.$name.".form.hh");
+  public function get_form_path(string $name) : ?string
+  {
+    return Application::get_instance()->get_file_from_application(self::FORM_PATH . $name . "Form.hh");
   }
 
   /**
@@ -226,9 +232,30 @@ class Loader{
    *
    * @return the generated forms.
    */
-  public function load_form($name) : Form{
-    $form = new Form();
-    $form->load_form($name);
+  public function load_form(string $name) : Form
+  {
+    $classPath = $this->get_form_path($name);
+    $className = $name . "Form";
+
+    $form = null;
+    if ($classPath !== null)
+    {
+      $namespace = Autoloader::get_namespace_filepath($classPath);
+
+      $reflectionClass = new \ReflectionClass($namespace . "\\" . $className);
+
+      $form = $reflectionClass->newInstance();
+    }
+    else
+    {
+      throw new \Exception("No form $name was found.");
+    }
+
+    if (!($form instanceof Form)) {
+      throw new \Exception("$name is not a Form object.");
+    }
+
+    $form->create();
 
     return $form;
   }

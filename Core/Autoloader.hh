@@ -92,7 +92,7 @@ class Autoloader{
     $path = implode(DIRECTORY_SEPARATOR, $parts);
 
     $file = $className . ".hh";
-    $filepath = $scope.$path.DIRECTORY_SEPARATOR.$file;
+    $filepath = $scope . DIRECTORY_SEPARATOR . $path . DIRECTORY_SEPARATOR . $file;
 
     if (file_exists($filepath))
     {
@@ -100,4 +100,5 @@ class Autoloader{
     }
 
   }
+
 }

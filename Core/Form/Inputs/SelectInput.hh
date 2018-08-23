@@ -2,6 +2,9 @@
 namespace Ninjack\Core\Form\Inputs;
 use Ninjack\Core\Form\FormInput as FormInput;
 
+use xhp_select;
+use xhp_option;
+
 /**
  * Text input generator.
  *

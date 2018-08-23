@@ -153,7 +153,7 @@ class Application{
     if($extends != null && $extends instanceof Vector){
       foreach ($extends as $application) {
         $path_parts = explode(DS, $application);
-        $name = array_pop($path_parts);
+        $name = array_pop(&$path_parts);
         $parent_path = implode(DS, $path_parts).DS.str_replace(".", DS, $name);
         $this->parents[$name] = realpath($parent_path);
         $namespace = implode("\\", array_map(($name) ==> ucfirst($name),explode(".",$name)));
@@ -214,7 +214,7 @@ class Application{
 
     $uri = $this->request->get_uri();
     $route = $this->router->route($uri);
-    
+
     if($route != null){
 
       $controller_name = $route->get_controller();

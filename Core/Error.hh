@@ -20,7 +20,7 @@ class Error{
    *
    * @param \Exception $exception exception to handle.
    */
-  public function handler(\Exception $exception) : void{
+  public function handler(\Throwable $exception) : void{
     $variables = Map{
       "error" => $exception,
       "back_trace" => debug_backtrace(),

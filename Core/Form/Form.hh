@@ -15,6 +15,9 @@ use Ninjack\Core\Form\Inputs\TextInput as TextInput;
 use Ninjack\Core\Form\Inputs\SelectInput as SelectInput;
 use Ninjack\Core\Form\Inputs\HiddenInput as HiddenInput;
 
+use xhp_form;
+use xhp_input;
+
 /**
  * An html form genrator and checker.
  *
@@ -129,7 +132,7 @@ class Form{
     $path = Application::get_instance()->loader()->get_form_path($name);
 
     if($path === null){
-      throw  new \Exception("No form was found with the name : $name"); 
+      throw  new \Exception("No form was found with the name : $name");
     }
 
     include $path;
