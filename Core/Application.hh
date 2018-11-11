@@ -22,7 +22,8 @@ use Ninjack\Core\Event\EventListener as EventListener;
  * @author Sulivan
  *
  */
-class Application{
+class Application
+{
 
   /**
    * The name of the application

@@ -15,7 +15,8 @@ use Ninjack\Core\Exception\NoActionException as NoActionException;
  *
  * @author Sulivan
  */
-class Controller{
+class Controller
+{
 
   /**
    * The generated view.
@@ -54,22 +55,25 @@ class Controller{
     * @throws Ninjack\Core\NoActionException if the action was not found.
     *
     */
-  public final function run(string $action, Vector $parameters) : void{
+  public final function run(string $action, Vector $parameters) : void
+  {
 
     $class = new \ReflectionClass($this);
-    $controllerName = $class->getShortName();
+    $controllerName = rtrim($class->getShortName(), "Controller");
+
 
     $is_action = false;
     $exists = method_exists($this, $action);
 
-    if($exists){
+    if ($exists)
+    {
       $method = new \ReflectionMethod($this, $action);
       $is_action = isset($method->getAttributes()["Action"]);
 
       $theme = $this->theme ?? $this->application->get_configuration()->get_string("default_theme");
 
-
-      $this->view = new View($controllerName."/".$action."/default",
+      $this->view = new View(
+        $controllerName."/".$action."/default",
         $theme
       );
 

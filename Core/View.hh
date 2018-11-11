@@ -143,17 +143,21 @@ class View{
 
     $url = Application::get_instance()->server()->get_root_url();
 
-    if(strlen($path) > 0 && $path[0] == DIRECTORY_SEPARATOR){
+    if(strlen($path) > 0 && $path[0] == DIRECTORY_SEPARATOR)
+    {
       $path = substr($path, 1);
     }
+
     $path = Loader::ASSETS_PATH.$path;
 
     $path = $this->get_asset_absolute_path($path, $theme);
 
-    if($path !== null){
+    if($path !== null)
+    {
       $public_path = $this->generate_asset($path);
 
-      if($public_path == null){
+      if($public_path == null)
+      {
         return "";
       }
 
@@ -213,8 +217,6 @@ class View{
    */
   private function generate_asset(string $filepath) : ?string{
 
-
-
     $extension = pathinfo($filepath, PATHINFO_EXTENSION);
 
     $content = $this->get_asset_content($filepath);
@@ -261,6 +263,7 @@ class View{
     }
 
     $status = file_put_contents($public_assets_path, $content) !== false;
+
 
     return !$status ? null : $public_assets_path;
   }

@@ -70,35 +70,34 @@ class Loader{
    */
   public function load_controller(string $controller) : ?Controller
   {
-    $path = Application::get_instance()->get_file_from_application(self::CONTROLLER_PATH . $controller . ".hh");
+
+    $controllerClassName = $controller . "Controller";
+
+    $path = Application::get_instance()->get_file_from_application(self::CONTROLLER_PATH . $controllerClassName . ".hh");
 
     if ($path === null)
     {
-      throw new FileNotFoundException("Controller file '".$controller."' not found in application.");
+      throw new FileNotFoundException("Controller file '".$controllerClassName."' not found in application.");
     }
 
     $namespace = Autoloader::get_namespace_filepath($path);
-
-    $controller = $namespace."\\".$controller;
+    $controllerClassName = $namespace . "\\" . $controllerClassName;
 
     include_once $path;
 
+    if (class_exists($controllerClassName, true))
+    {
+      $reflector = new \ReflectionClass($controllerClassName);
 
-    if(class_exists($controller, true)){
+      $controllerInstance = $reflector->newInstance();
 
-      $reflector = new \ReflectionClass($controller);
-
-      $obj = $reflector->newInstance();
-
-      if($obj instanceof Controller){
-        return $obj;
+      if ($controllerInstance instanceof Controller)
+      {
+        return $controllerInstance;
       }
     }
 
-
-
     return null;
-
   }
 
   /**
