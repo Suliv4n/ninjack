@@ -13,7 +13,7 @@ class Field implements \HH\ParameterAttribute, \HH\InstancePropertyAttribute
     $this->property = $property;
   }
 
-  public function set_setter(?\ReflectionMethod $setter)
+  public function set_setter(?\ReflectionMethod $setter) : void
   {
     $this->setter = $setter;
   }

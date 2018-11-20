@@ -3,8 +3,9 @@ namespace Ninjack\Core\Database\Orm2;
 
 use Ninjack\Core\Database\Orm2\Attributes\Fields\Field;
 use Ninjack\Core\Database\Orm2\Attributes\Fields\Id;
+use Ninjack\Core\Database\Orm2\Attributes\Fields\Foreign;
 
-class ClassMap<T>
+class ClassMap
 {
   private Vector<Field> $fields;
 
@@ -39,6 +40,16 @@ class ClassMap<T>
         $this->fields->add(($field ?? $field_id));
         continue;
       }
+
+      $foreign_field = $parameter->getAttributeClass(Foreign::class);
+
+      if ($foreign_field !== null)
+      {
+        $this->parse_foreign_field($foreign_field, $class_reflection, $parameter);
+        $this->fields->add($foreign_field);
+        continue;
+      }
+
     }
   }
 
@@ -63,6 +74,20 @@ class ClassMap<T>
 
 
     $field->set_setter($setter);
+  }
+
+  private function parse_foreign_field(Foreign $field, \ReflectionClass $entity_class, \ReflectionParameter $target_parameter) : void
+  {
+    $this->parse_simple_field($field, $entity_class, $target_parameter);
+
+    $target_class = $target_parameter->getClass();
+
+    if ($target_parameter === null)
+    {
+      throw new \Exception("Parameter must be typed.");
+    }
+
+    $field->set_target_classname($target_class->getName());
   }
 
   public function get_fields() : Vector<Field>
