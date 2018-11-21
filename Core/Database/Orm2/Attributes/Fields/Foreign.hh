@@ -11,4 +11,8 @@ class Foreign extends Field
     $this->target_classname = $classname;
   }
 
+  public function get_target_classname() : string
+  {
+    return $this->target_classname;
+  }
 }
