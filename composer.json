@@ -1,0 +1,6 @@
+{
+    "require-dev": {
+        "hhvm/hacktest": "^1.2",
+        "facebook/fbexpect": "^2.2"
+    }
+}
