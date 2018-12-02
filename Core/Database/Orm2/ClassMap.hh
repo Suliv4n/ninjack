@@ -4,6 +4,7 @@ namespace Ninjack\Core\Database\Orm2;
 use Ninjack\Core\Database\Orm2\Attributes\Fields\Field;
 use Ninjack\Core\Database\Orm2\Attributes\Fields\Id;
 use Ninjack\Core\Database\Orm2\Attributes\Fields\Foreign;
+use Ninjack\Core\Database\Orm2\Attributes\Fields\ManyToMany;
 
 class ClassMap
 {
@@ -41,6 +42,15 @@ class ClassMap
         continue;
       }
 
+      $field_many_to_many = $parameter->getAttributeClass(ManyToMany::class);
+
+      if ($field_many_to_many !== null)
+      {
+        $this->parse_many_to_many_field($field_many_to_many, $class_reflection, $parameter);
+        $this->fields->add($field_many_to_many);
+        continue;
+      }
+
       $foreign_field = $parameter->getAttributeClass(Foreign::class);
 
       if ($foreign_field !== null)
@@ -50,7 +60,9 @@ class ClassMap
         continue;
       }
 
+
     }
+
   }
 
   private function parse_simple_field(Field $field, \ReflectionClass $entity_class, \ReflectionParameter $target_parameter) : void
@@ -88,6 +100,29 @@ class ClassMap
     }
 
     $field->set_target_classname($target_class->getName());
+  }
+
+  private function parse_many_to_many_field(ManyToMany $field, \ReflectionClass $entity_class, \ReflectionParameter $target_parameter)
+  {
+    $this->parse_simple_field($field, $entity_class, $target_parameter);
+
+    $type = $target_parameter->getType();
+
+    if ($type === null)
+    {
+      throw new \Exception("ManyToMany field must be typed with generic (ie: Vector<Entity>).");
+    }
+
+    $type_name = $type->__toString();
+
+    $matches = Vector{};
+
+    if (!preg_match(re"/<([^>]*)>$/", $type_name, &$matches))
+    {
+      throw new \Exception("Generic type missing");
+    }
+
+    $field->set_target_classname($matches[1]);
   }
 
   public function get_fields() : Vector<Field>

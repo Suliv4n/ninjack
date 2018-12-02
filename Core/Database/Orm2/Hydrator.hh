@@ -1,7 +1,8 @@
 <?hh
 namespace Ninjack\Core\Database\Orm2;
 
-use Ninjack\Core\Database\Orm2\Attributes\Fields\Foreign;
+use Ninjack\Core\Database\Orm2\Attributes\Fields\{Foreign, ManyToMany};
+
 
 class Hydrator
 {
@@ -18,8 +19,6 @@ class Hydrator
       {
         $field_value = $data[$field->get_field_name()];
 
-
-
         if ($field instanceof Foreign)
         {
           $target_classname = $field->get_target_classname();
@@ -29,7 +28,19 @@ class Hydrator
             $field_value instanceof \Traversable
           )
           {
-            $field_value = $this->hydrate($target_classname, $field_value);
+            if ($field instanceof ManyToMany)
+            {
+              $field_values = $field_value;
+              $field_value = Vector{};
+              foreach ($field_values as $entity_data)
+              {
+                $field_value[] = $this->hydrate($target_classname, $entity_data);
+              }
+            }
+            else
+            {
+              $field_value = $this->hydrate($target_classname, $field_value);
+            }
           }
         }
 
